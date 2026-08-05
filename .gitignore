@@ -1,0 +1,60 @@
+# --- Виртуальные окружения и зависимости (uv / venv / conda) ---
+.venv/
+venv/
+ENV/
+*.egg-info/
+uv.lock          # ВАЖНО: обычно uv.lock КОММИТЯТ, не игнорируй его, если хочешь воспроизводимость в CI
+
+# --- Компиляция и кэш Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+
+# --- Артефакты сборки ---
+build/
+dist/
+*.whl
+*.tar.gz
+
+# --- IDE и редакторы ---
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+*.orig
+
+# --- Локальные конфиги и секреты (НИКОГДА не коммить!) ---
+.env
+.secrets.env
+local_settings.py
+credentials.json
+config/local.yaml
+
+# --- Результаты тестов и отчёты (генерируются при каждом прогоне) ---
+.allure-results/
+.allure-report/
+test-output/
+screenshots/
+artifacts/
+logs/
+*.log
+
+# --- Docker ---
+docker-compose.override.yml
+.dockerenv
+
+# --- ОС-специфичные файлы ---
+.DS_Store
+Thumbs.db
+Desktop.ini
+ehthumbs.db
+
+# --- Прочее ---
+tmp/
+temp/
+*.tmp
