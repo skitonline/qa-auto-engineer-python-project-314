@@ -7,5 +7,9 @@ requires-python = ">=3.12"
 dependencies = [
     "allure-pytest>=2.16.0",
     "pytest>=9.1.1",
+    "python-dotenv>=1.2.2",
     "selenium>=4.46.0",
 ]
+
+[tool.setuptools.packages.find]
+include = ["pages*"]
