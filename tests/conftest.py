@@ -35,5 +35,3 @@ def driver():
 @pytest.fixture(scope="function")
 def base_url():
     return os.environ["APP_BASE_URL"]
-
-test = 'test'
