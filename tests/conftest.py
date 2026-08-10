@@ -16,6 +16,7 @@ CHROME_ARGS = (
     "--disable-extensions",
     "--disable-blink-features=AutomationControlled",
     "--blink-settings=imagesEnabled=false",
+    "--window-size=1920,1080",
 )
 
 
