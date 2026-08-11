@@ -4,6 +4,7 @@ import os
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from dotenv import load_dotenv
+from pages.login_page import LoginPage
 
 
 load_dotenv()
@@ -36,3 +37,11 @@ def driver():
 @pytest.fixture(scope="function")
 def base_url():
     return os.environ["APP_BASE_URL"]
+
+
+@pytest.fixture(scope="function")
+def authorized_user(driver, base_url):
+    page = LoginPage(driver)
+    page.open(base_url)
+    page.login("user", "password")
+    yield driver

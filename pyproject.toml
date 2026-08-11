@@ -13,3 +13,8 @@ dependencies = [
 
 [tool.setuptools.packages.find]
 include = ["pages*"]
+
+[dependency-groups]
+dev = [
+    "pytest-xdist>=3.8.0",
+]

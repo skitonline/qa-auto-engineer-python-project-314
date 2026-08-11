@@ -10,3 +10,4 @@ def test_logout(driver, base_url):
     login_page.login("user", "password")
 
     admin_page.logout()
+    assert '/login' in driver.current_url

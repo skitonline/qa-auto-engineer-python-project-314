@@ -9,11 +9,13 @@ class LoginPage(BasePage):
     SUBMIT = (By.CSS_SELECTOR, 'button[type="submit"]')
     WELCOME = (By.ID, 'react-admin-title')
     ALERT = (By.CSS_SELECTOR, 'div[role="alert"]')
+    ERROR_NOTIFICATION = (By.CSS_SELECTOR, 'div.RaNotification-error')
 
 
     def login(self, username, password):
         self.type(self.USERNAME, username)
         self.type(self.PASSWORD, password)
+        
         if self.validate(username) and self.validate(password):
             self.wait_for_notification_to_disappear()
             self.click(self.SUBMIT)
@@ -25,3 +27,7 @@ class LoginPage(BasePage):
 
     def validate(self, string):
         return len(string)
+
+
+    def wait_for_notification_to_disappear(self):
+        self.wait.until(EC.invisibility_of_element_located(self.ERROR_NOTIFICATION))
