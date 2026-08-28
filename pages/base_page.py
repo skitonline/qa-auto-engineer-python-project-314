@@ -1,6 +1,5 @@
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import NoSuchElementException
 
 
 class BasePage:
@@ -12,17 +11,25 @@ class BasePage:
     def open(self, url):
         self.driver.get(url)
 
+
+    def url(self):
+        return self.driver.current_url
+
+
     def is_displayed(self, locator):
         try:
-            el = self.wait.until(EC.visibility_of_element_located(locator))
-            return el.is_displayed()
-        except NoSuchElementException:
+            self.wait.until(EC.visibility_of_element_located(locator))
+            return True
+        except Exception:
             return False
 
 
     def click(self, locator):
-        el = self.wait.until(EC.element_to_be_clickable(locator))
-        el.click()
+        try:
+            self.wait.until(EC.element_to_be_clickable(locator)).click()
+            return True
+        except Exception:
+            return False
 
 
     def type(self, locator, text):
@@ -34,6 +41,7 @@ class BasePage:
     def text_of(self, locator):
         el = self.wait.until(EC.visibility_of_element_located(locator))
         return el.text
+
 
 
     

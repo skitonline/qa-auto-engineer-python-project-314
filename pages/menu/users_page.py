@@ -1,28 +1,49 @@
-from pages.administration_page import AdministrationPage
+from pages.list_structure_page import ListStructureClass
 from selenium.webdriver.common.by import By
-from selenium.common.exceptions import NoSuchElementException
+import re
 
 
-class UsersPage(AdministrationPage):
-    CREATE = (By.CSS_SELECTOR, 'a[aria-label="Create"]')
-
+class UsersPage(ListStructureClass):
     EMAIL = (By.CSS_SELECTOR, 'input[name="email"]')
     FIRST_NAME = (By.CSS_SELECTOR, 'input[name="firstName"]')
     LAST_NAME = (By.CSS_SELECTOR, 'input[name="lastName"]')
 
-    SAVE_BUTTON = (By.CSS_SELECTOR, 'button[aria-label="Save"]')
-    CREATE_DONE = (By.XPATH, '//div[normalize-space()="Element created"]')
+    COLUMNS = ('email', 'first_name', 'last_name', 'created_at')
 
+
+    def __init__(self, driver):
+        super().__init__(driver)
+        self.open_users()
+
+    
     def add_user(self, email, first_name, last_name):
-        self.click(self.CREATE)
-
-        self.type(self.EMAIL, email)
-        self.type(self.FIRST_NAME, first_name)
-        self.type(self.LAST_NAME, last_name)
-
-        self.click(self.SAVE_BUTTON)
-        try:
-            self.driver.find_element(*self.CREATE_DONE)
-            return True
-        except NoSuchElementException:
+        if not (self.validate_email(email) \
+                and self.validate_first_name(first_name) \
+                and self.validate_last_name(last_name)):
             return False
+        result = self.add_element(
+            {
+                self.EMAIL : email,
+                self.FIRST_NAME : first_name,
+                self.LAST_NAME : last_name
+            }
+        )
+        self.open_users()
+        return result
+
+
+    EMAIL_PATTERN = re.compile(r'^\S+@\S+\.\S+$')
+    def validate_email(self, email):
+        return self.EMAIL_PATTERN.match(email) is not None
+
+    
+    def validate_first_name(self, first_name):
+        return len(first_name)
+
+
+    def validate_last_name(self, last_name):
+            return len(last_name)
+
+
+    def get_users(self):
+        return self.get_all_rows(self.COLUMNS)

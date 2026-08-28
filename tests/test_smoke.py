@@ -1,7 +1,7 @@
 from selenium.webdriver.common.by import By
 
 
-def test_open_main_page(driver, base_url):
+def test_smoke(driver, base_url):
     driver.get(base_url)
 
     assert driver.title == 'Task manager'

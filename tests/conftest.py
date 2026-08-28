@@ -21,7 +21,7 @@ CHROME_ARGS = (
 )
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 def driver():
     options = Options()
     for arg in CHROME_ARGS:
@@ -34,12 +34,12 @@ def driver():
         driver.quit()
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 def base_url():
     return os.environ["APP_BASE_URL"]
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 def authorized_user(driver, base_url):
     page = LoginPage(driver)
     page.open(base_url)

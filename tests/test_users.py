@@ -1,44 +1,48 @@
 from pages.menu.users_page import UsersPage
-from selenium.webdriver.common.by import By
 
 
 def test_form_add_user(authorized_user):
     page = UsersPage(authorized_user)
     page.open_users()
 
-    assert page.is_displayed(page.CREATE)
-    page.click(page.CREATE)
+    assert page.is_displayed(page.CREATE_BTN)
+    page.click(page.CREATE_BTN)
 
     assert page.is_displayed(page.EMAIL)
     assert page.is_displayed(page.FIRST_NAME)
     assert page.is_displayed(page.LAST_NAME)
-    assert page.is_displayed(page.SAVE_BUTTON)
+    assert page.is_displayed(page.SAVE_BTN)
 
 
 def test_add_user(authorized_user):
     page = UsersPage(authorized_user)
-    page.open_users()
     
-    COUNT_LOCATOR = (By.CSS_SELECTOR, '#main-content p.MuiTablePagination-displayedRows')
-    count_users = page.text_of(COUNT_LOCATOR)
+    count_users = page.how_many_elements_countains()
     assert page.add_user('email@mail.ru', 'alex', 'evs')
-    
-    page.open_users()
-    count_users_after_add = page.text_of(COUNT_LOCATOR)
-    #не очень очевидно, но тут я выдергиваю кол-во всех пользователей из строки вида '1-8 of 10'
-    assert int(count_users.split("of")[1]) + 1 == int(count_users_after_add.split("of")[1])
-    
+    count_users_after_add = page.how_many_elements_countains()
 
+    assert count_users + 1 == count_users_after_add
+    
 
 def test_add_user_with_empty_email(authorized_user):
     page = UsersPage(authorized_user)
-    page.open_users()
 
-    COUNT_LOCATOR = (By.CSS_SELECTOR, '#main-content p.MuiTablePagination-displayedRows')
-    count_users = page.text_of(COUNT_LOCATOR)
+    count_users = page.how_many_elements_countains()
     assert not page.add_user('', 'alex', 'evs')
-    print(count_users)
+    count_users_after_add = page.how_many_elements_countains()
 
-    page.open_users()
-    count_users_after_add = page.text_of(COUNT_LOCATOR)
     assert count_users == count_users_after_add
+
+
+def test_get_users(authorized_user):
+    page = UsersPage(authorized_user)
+    for _ in range(23):
+        page.add_user('email@mail.ru', 'alex', 'evs')
+    users = page.get_users()
+
+    for user in users:
+        user = list(user.values())[0]
+        assert user['email']
+        assert user['first_name']
+        assert user['last_name']
+    assert len(users) == page.how_many_elements_countains()
