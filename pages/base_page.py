@@ -1,3 +1,4 @@
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
@@ -32,15 +33,22 @@ class BasePage:
             return False
 
 
-    def type(self, locator, text):
-        el = self.wait.until(EC.visibility_of_element_located(locator))
-        el.clear()
-        el.send_keys(text)
-
-
     def text_of(self, locator):
         el = self.wait.until(EC.visibility_of_element_located(locator))
         return el.text
+
+    
+    def get_value(self, locator, attribute='value'):
+        el = self.wait.until(EC.visibility_of_element_located(locator))
+        return el.get_attribute(attribute)
+
+
+    def fill_field(self, locator, value):
+        el = self.wait.until(EC.visibility_of_element_located(locator))
+        el.click()
+        el.send_keys(Keys.CONTROL + "a")
+        el.send_keys(value)
+
 
 
 

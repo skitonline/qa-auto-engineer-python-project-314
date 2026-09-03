@@ -2,7 +2,7 @@ from pages.login_page import LoginPage
 from pages.main_page import MainPage
 
 
-def test_login_succes(driver, base_url):
+def test_login_success(driver, base_url):
     page = LoginPage(driver)
     page.open(base_url)
     assert page.login("user", "password")

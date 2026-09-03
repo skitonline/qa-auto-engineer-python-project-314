@@ -1,8 +1,5 @@
 from pages.main_page import MainPage
-from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-import time
 from selenium.webdriver.support import expected_conditions as EC
 
 
@@ -37,35 +34,82 @@ class ListStructureClass(MainPage):
     CELL_IN_ROW = (By.TAG_NAME, "td")
     NEXT_ICON = (By.CSS_SELECTOR, 'button[aria-label="Go to next page"]')
 
+    def _go_to_next_page(self):
+        buttons = self.driver.find_elements(*self.NEXT_ICON)
+        if not buttons:
+            return False
+
+        btn = buttons[0]
+        if not btn.is_displayed() or not btn.is_enabled():
+            return False
+        if btn.get_attribute("aria-disabled") == "true":
+            return False
+
+        rows = self.driver.find_elements(*self.ROW)
+        first = rows[0] if rows else None
+        btn.click()
+        if first is not None:
+            self.wait.until(EC.staleness_of(first))
+        return True
+
     def get_all_rows(self, columns):
-        result = []
+        result = {}
 
         while True:
-            rows = self.driver.find_elements(*self.ROW)
+            page_rows = self.driver.execute_script(
+                """
+                return Array.from(document.querySelectorAll('tbody tr')).map(row => {
+                    const cells = Array.from(row.querySelectorAll('td'));
+                    const checkbox = cells[0]
+                        && cells[0].querySelector('input[type="checkbox"]');
+                    return {
+                        id: cells[1] ? cells[1].innerText.trim() : '',
+                        checkbox: !!(checkbox && checkbox.checked),
+                        fields: cells.slice(2).map(c => c.innerText.trim())
+                    };
+                });
+                """
+            )
 
-            for row in rows:
-                cells = row.find_elements(*self.CELL_IN_ROW)
-                checkbox_cell, id_cell, *fields_cells = cells
+            for row in page_rows:
+                item = {"checkbox": row["checkbox"]}
+                for i, col in enumerate(columns):
+                    item[col] = row["fields"][i] if i < len(row["fields"]) else ""
+                result[row["id"]] = item
 
-                checkbox_input = checkbox_cell.find_element(By.CSS_SELECTOR, "input[type='checkbox']")
-                is_checked = self.driver.execute_script("return arguments[0].checked;", checkbox_input)
-                id = id_cell.text
-
-                row = {}
-                row[id] = {'checkbox' : is_checked}
-                for i in range(len(columns)):
-                    row[id][columns[i]] = fields_cells[i].text
-
-                result.append(row)
-
-            if not self.click(self.NEXT_ICON):
+            if not self._go_to_next_page():
                 break
 
-            # Даём браузеру время начать рендер (это спасает от Stale внутри ожидания)
-            time.sleep(0.5)
-        #print(result)
         return result
 
 
-    def edit_row(self, data):
-        pass
+    def get_element_by_id(self, id_row):
+        id_row = str(id_row)
+
+        while True:
+            rows = self.driver.find_elements(*self.ROW)
+            for row in rows:
+                cells = row.find_elements(*self.CELL_IN_ROW)
+                id = cells[1].text
+                if id == id_row:
+                    return row
+            if not self._go_to_next_page():
+                break
+        return None
+
+    def edit_row(self, new_row_data):
+        for locator, value in new_row_data.items():
+            self.fill_field(locator, value)
+        return self.click(self.SAVE_BTN)
+
+
+    def delete_row(self, row_id):
+        row = self.get_element_by_id(row_id)
+        checkbox_cell = row.find_elements(*self.CELL_IN_ROW)[0]
+        checkbox = checkbox_cell.find_element(By.CSS_SELECTOR, "input[type='checkbox']")
+        is_checked = self.driver.execute_script("return arguments[0].checked;", checkbox)
+        if not is_checked:
+            checkbox.click()
+            self.click(self.DELETE_BTN)
+            return True
+        return False 
