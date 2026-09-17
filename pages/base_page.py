@@ -49,6 +49,11 @@ class BasePage:
         el.send_keys(Keys.CONTROL + "a")
         el.send_keys(value)
 
+    def type(self, locator, value):
+        el = self.wait.until(EC.visibility_of_element_located(locator))
+        el.click()
+        el.send_keys(value)
+
 
 
 

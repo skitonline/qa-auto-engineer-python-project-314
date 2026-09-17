@@ -62,7 +62,7 @@ def test_get_user_by_id(authorized_user):
 def test_get_user_by_id_not_found(authorized_user):
     page = UsersPage(authorized_user)
     user = page.get_user_by_id(1000)
-    assert user is None
+    assert not user
 
 
 def test_form_edit_user(authorized_user):

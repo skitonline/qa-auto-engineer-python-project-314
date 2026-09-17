@@ -58,8 +58,8 @@ class UsersPage(ListStructureClass):
         return self.get_all_rows(self.COLUMNS)
 
 
-    def get_user_by_id(self, user_id, go_into_row=False):
-        row = self.get_element_by_id(user_id, self.COLUMNS)
+    def get_user_by_id(self, user_id):
+        row = self.get_element_by_id(user_id)
         if row is None:
             return False
 
@@ -68,10 +68,8 @@ class UsersPage(ListStructureClass):
         _, _, *fields_cells = cells
         for i in range(len(self.COLUMNS)):
             data[self.COLUMNS[i]] = fields_cells[i].text
-
-        if go_into_row:
-            row.click()
-
+            
+        row.click()
         return data
 
 
