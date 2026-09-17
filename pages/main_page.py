@@ -34,6 +34,6 @@ class MainPage(BasePage):
         self.click(self.LABELS)
 
 
-    def open_task_statuses(self):
+    def open_statuses(self):
         self.click(self.TASK_STATUSES)
 

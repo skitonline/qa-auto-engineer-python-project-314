@@ -16,9 +16,9 @@ def test_form_add_user(authorized_user):
 def test_add_user(authorized_user):
     page = UsersPage(authorized_user)
     
-    count_users = page.how_many_elements_countains()
+    count_users = len(page.get_users())
     assert page.add_user('email@mail.ru', 'alex', 'evs')
-    count_users_after_add = page.how_many_elements_countains()
+    count_users_after_add = len(page.get_users())
 
     assert count_users + 1 == count_users_after_add
     
@@ -26,9 +26,9 @@ def test_add_user(authorized_user):
 def test_add_user_with_empty_email(authorized_user):
     page = UsersPage(authorized_user)
 
-    count_users = page.how_many_elements_countains()
+    count_users = len(page.get_users())
     assert not page.add_user('', 'alex', 'evs')
-    count_users_after_add = page.how_many_elements_countains()
+    count_users_after_add = len(page.get_users())
 
     assert count_users == count_users_after_add
 
@@ -47,7 +47,7 @@ def test_get_users(authorized_user):
         assert fields['first_name']
         assert fields['last_name']
 
-    assert len(users) == page.how_many_elements_countains()
+    assert len(users) == 31
 
 
 def test_get_user_by_id(authorized_user):
@@ -69,9 +69,9 @@ def test_form_edit_user(authorized_user):
     page = UsersPage(authorized_user)
     user = page.get_user_by_id(1)
 
-    email = page.get_value(page.EMAIL_EDIT_FORM)
-    first_name = page.get_value(page.FIRST_NAME_EDIT_FORM)
-    last_name = page.get_value(page.LAST_NAME_EDIT_FORM)
+    email = page.get_value(page.EMAIL)
+    first_name = page.get_value(page.FIRST_NAME)
+    last_name = page.get_value(page.LAST_NAME)
 
     assert email == user['email']
     assert first_name == user['first_name']
@@ -92,6 +92,7 @@ def test_edit_user(authorized_user):
     assert user['first_name'] == 'new_first_name'
     assert user['last_name'] == 'new_last_name'
 
+
 def test_edit_with_invalid_email(authorized_user):
     page = UsersPage(authorized_user)
     user = page.get_user_by_id(1)
@@ -104,3 +105,17 @@ def test_edit_with_invalid_email(authorized_user):
     page.open_users()
 
     assert user['email'] == email
+
+
+def test_delete_user(authorized_user):
+    page = UsersPage(authorized_user)
+    assert page.delete_row(1)
+    user = page.get_user_by_id(1)
+    assert not user
+
+
+def test_delete_all_users(authorized_user):
+    page = UsersPage(authorized_user)
+    page.delete_all_rows()
+    users = page.get_users()
+    assert len(users) == 0

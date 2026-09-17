@@ -8,8 +8,6 @@ class ListStructureClass(MainPage):
     SAVE_BTN = (By.CSS_SELECTOR, '[aria-label="Save"]')
     CREATE_DONE = (By.XPATH, '//div[normalize-space()="Element created"]')
 
-    COUNT_COUNTAINS = (By.CSS_SELECTOR, 'p.MuiTablePagination-displayedRows')
-
     DELETE_BTN = (By.CSS_SELECTOR, '[aria-label="Delete"]')
     SELECT_ALL = (By.CSS_SELECTOR, '[aria-label="Select all"]')
 
@@ -22,12 +20,6 @@ class ListStructureClass(MainPage):
         self.click(self.SAVE_BTN)
 
         return self.is_displayed(self.CREATE_DONE)
-
-
-    def how_many_elements_countains(self):
-        #строка вида '1-8 of 8'
-        count = self.text_of(self.COUNT_COUNTAINS)
-        return int(count.split("of")[1])
 
 
     ROW = (By.CSS_SELECTOR, "tbody tr")
@@ -105,11 +97,21 @@ class ListStructureClass(MainPage):
 
     def delete_row(self, row_id):
         row = self.get_element_by_id(row_id)
+
+        if row is None:
+            return False
+
         checkbox_cell = row.find_elements(*self.CELL_IN_ROW)[0]
         checkbox = checkbox_cell.find_element(By.CSS_SELECTOR, "input[type='checkbox']")
         is_checked = self.driver.execute_script("return arguments[0].checked;", checkbox)
+
         if not is_checked:
             checkbox.click()
-            self.click(self.DELETE_BTN)
-            return True
-        return False 
+        self.click(self.DELETE_BTN)
+        return True
+
+
+    def delete_all_rows(self):
+        el = self.wait.until(EC.presence_of_element_located(self.SELECT_ALL))
+        self.driver.execute_script("arguments[0].click();", el)
+        self.click(self.DELETE_BTN)

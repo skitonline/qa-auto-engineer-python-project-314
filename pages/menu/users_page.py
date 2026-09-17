@@ -8,10 +8,6 @@ class UsersPage(ListStructureClass):
     FIRST_NAME = (By.CSS_SELECTOR, 'input[name="firstName"]')
     LAST_NAME = (By.CSS_SELECTOR, 'input[name="lastName"]')
 
-    EMAIL_EDIT_FORM = (By.NAME, "email")
-    FIRST_NAME_EDIT_FORM = (By.NAME, "firstName")
-    LAST_NAME_EDIT_FORM = (By.NAME, "lastName")
-
     COLUMNS = ('email', 'first_name', 'last_name', 'created_at')
 
 
@@ -47,11 +43,11 @@ class UsersPage(ListStructureClass):
 
     
     def _validate_first_name(self, first_name):
-        return len(first_name)
+        return len(first_name) > 0
 
 
     def _validate_last_name(self, last_name):
-            return len(last_name)
+        return len(last_name) > 0
 
 
     def get_users(self):
@@ -68,7 +64,7 @@ class UsersPage(ListStructureClass):
         _, _, *fields_cells = cells
         for i in range(len(self.COLUMNS)):
             data[self.COLUMNS[i]] = fields_cells[i].text
-            
+
         row.click()
         return data
 
@@ -87,9 +83,9 @@ class UsersPage(ListStructureClass):
 
         result = self.edit_row(
             {
-                self.EMAIL_EDIT_FORM : email,
-                self.FIRST_NAME_EDIT_FORM : first_name,
-                self.LAST_NAME_EDIT_FORM : last_name
+                self.EMAIL : email,
+                self.FIRST_NAME : first_name,
+                self.LAST_NAME : last_name
             }
         )
         
