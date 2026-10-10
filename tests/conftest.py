@@ -5,6 +5,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 from pages.login_page import LoginPage
+from pages.menu.users_page import UsersPage
 
 try:
     from dotenv import load_dotenv
@@ -52,3 +53,8 @@ def authorized_user(driver, base_url):
     password = os.environ.get("PASSWORD", "test")
     page.login(login, password)
     yield driver
+
+
+@pytest.fixture
+def user_page(authorized_user):
+    yield UsersPage(authorized_user)

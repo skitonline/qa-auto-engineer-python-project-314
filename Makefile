@@ -13,5 +13,8 @@ check:
 fix:
 	uv run ruff check --fix .
 
+smoke_test:
+	uv run pytest -k smoke
+
 test:
 	uv run pytest
