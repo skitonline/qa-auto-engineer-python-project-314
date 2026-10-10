@@ -30,3 +30,5 @@ uv_venv/
 # --- Тесты (pytest) ---
 .pytest_cache/
 htmlcov/
+
+.env
