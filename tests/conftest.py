@@ -1,13 +1,17 @@
 import os
 
 import pytest
-from dotenv import load_dotenv
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 from pages.login_page import LoginPage
 
-load_dotenv()
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv()
+except ImportError:
+    pass
 
 
 CHROME_ARGS = (
