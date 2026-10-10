@@ -1,0 +1,20 @@
+[project]
+name = "hexlet-code"
+version = "0.1.0"
+description = "Testing kanban desk with Python selenium"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "pytest>=9.1.1",
+    "python-dotenv>=1.2.4",
+    "selenium>=4.51.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.17.0",
+]
