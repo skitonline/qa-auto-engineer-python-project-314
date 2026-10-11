@@ -1,3 +1,14 @@
+import pages.locators.list_structure_locators as list_loc
+import pages.locators.users_locators as users_loc
+
+
+def test_edit_form(user_page):
+    assert user_page.click(list_loc.CREATE_BUTTON)
+    assert user_page.is_visibility(users_loc.EMAIL_INPUT)
+    assert user_page.is_visibility(users_loc.FIRST_NAME_INPUT)
+    assert user_page.is_visibility(users_loc.LAST_NAME_INPUT)
+
+
 def test_add_correct_user(user_page):
     assert user_page.add_user("test@test.com", "Test", "User")
 

@@ -27,13 +27,6 @@ class UsersPage(ListStructureClass):
             and self._validate_last_name(last_name)
         )
 
-    def _validate_fields(self, email, first_name, last_name):
-        return (
-            self._validate_email(email)
-            and self._validate_first_name(first_name)
-            and self._validate_last_name(last_name)
-        )
-
     def _validate_email(self, email):
         return re.match(r'^[^@]+@[^@]+\.[^@]+$', email)
 

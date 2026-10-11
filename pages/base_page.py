@@ -28,3 +28,9 @@ class BasePage:
             return True
         except Exception:
             return False
+
+    def is_visibility(self, locator):
+        try:
+            return self.driver.find_element(*locator).is_displayed()
+        except Exception:
+            return False
