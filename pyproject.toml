@@ -10,10 +10,6 @@ dependencies = [
     "selenium>=4.51.0",
 ]
 
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-pythonpath = ["."]
-
 [dependency-groups]
 dev = [
     "ruff>=0.17.0",

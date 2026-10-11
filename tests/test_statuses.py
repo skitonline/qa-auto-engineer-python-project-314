@@ -18,3 +18,13 @@ def test_add_status_with_invalid_name(statuses_page):
 
 def test_add_status_with_invalid_slug(statuses_page):
     assert not statuses_page.add_status("name", "")
+
+
+def test_added_status_in_table(statuses_page):
+    name = "name"
+    slug = "slug"
+    id = statuses_page.add_status(name, slug)
+
+    status = statuses_page.get_status_by_id(id)
+    assert status['name'] == "name"
+    assert status['slug'] == "slug"

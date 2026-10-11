@@ -10,10 +10,20 @@ class LabelsPage(ListStructureClass):
     def add_label(self, name):
         fields = [(loc.NAME_INPUT, name)]
 
-        return (
+        result = (
             self._validate_name(name)
             and self.add_element(fields)
         )
 
+        self.open_labels()
+        return result
+
     def _validate_name(self, name):
         return len(name) > 0
+
+    def get_all_labels(self):
+        return self._get_all_rows(loc.FIELDS)
+
+    def get_label_by_id(self, id):
+        labels = self.get_all_labels()
+        return labels.get(id)

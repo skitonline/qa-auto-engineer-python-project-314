@@ -16,12 +16,15 @@ class UsersPage(ListStructureClass):
             (loc.LAST_NAME_INPUT, last_name)
         ]
 
-        return (
+        result = (
             self._validate_email(email)
             and self._validate_first_name(first_name)
             and self._validate_last_name(last_name)
             and self.add_element(fields)
         )
+
+        self.open_users()
+        return result
 
     def _validate_email(self, email):
         return re.match(r'^[^@]+@[^@]+\.[^@]+$', email) is not None
@@ -31,3 +34,10 @@ class UsersPage(ListStructureClass):
 
     def _validate_last_name(self, last_name):
         return len(last_name) > 0
+
+    def get_all_users(self):
+        return self._get_all_rows(loc.FIELDS)
+
+    def get_user_by_id(self, id):
+        users = self.get_all_users()
+        return users.get(id)

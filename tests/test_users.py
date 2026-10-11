@@ -23,3 +23,15 @@ def test_add_user_with_invalid_first_name(users_page):
 
 def test_add_user_with_invalid_last_name(users_page):
     assert not users_page.add_user("test@test.com", "Test", "")
+
+
+def test_added_user_in_table(users_page):
+    email = "test@test.com"
+    first_name = "Test"
+    last_name = "Test"
+    id = users_page.add_user(email, first_name, last_name)
+
+    user = users_page.get_user_by_id(id)
+    assert user['email'] == "test@test.com"
+    assert user['first_name'] == "Test"
+    assert user['last_name'] == "Test"
