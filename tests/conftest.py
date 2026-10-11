@@ -5,6 +5,9 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 from pages.login_page import LoginPage
+from pages.menu.labels_page import LabelsPage
+from pages.menu.statuses_page import StatusesPage
+from pages.menu.tasks_page import TasksPage
 from pages.menu.users_page import UsersPage
 
 try:
@@ -56,5 +59,20 @@ def authorized_user(driver, base_url):
 
 
 @pytest.fixture
-def user_page(authorized_user):
+def users_page(authorized_user):
     yield UsersPage(authorized_user)
+
+
+@pytest.fixture
+def labels_page(authorized_user):
+    yield LabelsPage(authorized_user)
+
+
+@pytest.fixture
+def statuses_page(authorized_user):
+    yield StatusesPage(authorized_user)
+
+
+@pytest.fixture
+def tasks_page(authorized_user):
+    yield TasksPage(authorized_user)

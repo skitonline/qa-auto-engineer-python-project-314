@@ -2,24 +2,24 @@ import pages.locators.list_structure_locators as list_loc
 import pages.locators.users_locators as users_loc
 
 
-def test_edit_form(user_page):
-    assert user_page.click(list_loc.CREATE_BUTTON)
-    assert user_page.is_visibility(users_loc.EMAIL_INPUT)
-    assert user_page.is_visibility(users_loc.FIRST_NAME_INPUT)
-    assert user_page.is_visibility(users_loc.LAST_NAME_INPUT)
+def test_edit_form(users_page):
+    assert users_page.click(list_loc.CREATE_BUTTON)
+    assert users_page.is_visibility(users_loc.EMAIL_INPUT)
+    assert users_page.is_visibility(users_loc.FIRST_NAME_INPUT)
+    assert users_page.is_visibility(users_loc.LAST_NAME_INPUT)
 
 
-def test_add_correct_user(user_page):
-    assert user_page.add_user("test@test.com", "Test", "User")
+def test_add_correct_user(users_page):
+    assert users_page.add_user("test@test.com", "Test", "User")
 
 
-def test_add_user_with_invalid_email(user_page):
-    assert not user_page.add_user("test", "Test", "User")
+def test_add_user_with_invalid_email(users_page):
+    assert not users_page.add_user("test", "Test", "User")
 
 
-def test_add_user_with_invalid_first_name(user_page):
-    assert not user_page.add_user("test@test.com", "", "User")
+def test_add_user_with_invalid_first_name(users_page):
+    assert not users_page.add_user("test@test.com", "", "User")
 
 
-def test_add_user_with_invalid_last_name(user_page):
-    assert not user_page.add_user("test@test.com", "Test", "")
+def test_add_user_with_invalid_last_name(users_page):
+    assert not users_page.add_user("test@test.com", "Test", "")
