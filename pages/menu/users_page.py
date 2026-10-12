@@ -39,5 +39,4 @@ class UsersPage(ListStructureClass):
         return self._get_all_rows(loc.FIELDS)
 
     def get_user_by_id(self, id):
-        users = self.get_all_users()
-        return users.get(id)
+        return self._get_element_by_id(id, loc.FIELDS)

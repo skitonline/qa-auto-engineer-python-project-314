@@ -21,3 +21,11 @@ def test_added_label_in_table(labels_page):
 
     label = labels_page.get_label_by_id(id)
     assert label['name'] == "name"
+
+
+def test_check_all_labels(labels_page):
+    COUNT_LABELS_IN_TABLE = 5
+    labels = labels_page.get_all_labels()
+    assert COUNT_LABELS_IN_TABLE == len(labels)
+    for id in labels:
+        assert labels[id]['name']

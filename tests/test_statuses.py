@@ -28,3 +28,14 @@ def test_added_status_in_table(statuses_page):
     status = statuses_page.get_status_by_id(id)
     assert status['name'] == "name"
     assert status['slug'] == "slug"
+
+
+def test_check_all_statuses(statuses_page):
+    COUNT_STATUSES_IN_TABLE = 5
+    statuses = statuses_page.get_all_statuses()
+    assert COUNT_STATUSES_IN_TABLE == len(statuses)
+    for id in statuses:
+        assert statuses[id]['name']
+        assert statuses[id]["slug"]
+
+        

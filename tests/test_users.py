@@ -35,3 +35,13 @@ def test_added_user_in_table(users_page):
     assert user['email'] == "test@test.com"
     assert user['first_name'] == "Test"
     assert user['last_name'] == "Test"
+
+
+def test_check_all_users(users_page):
+    COUNT_USERS_IN_TABLE = 8
+    users = users_page.get_all_users()
+    assert COUNT_USERS_IN_TABLE == len(users)
+    for id in users:
+        assert users[id]['email']
+        assert users[id]["first_name"]
+        assert users[id]['last_name']

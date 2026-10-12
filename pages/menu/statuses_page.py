@@ -32,5 +32,4 @@ class StatusesPage(ListStructureClass):
         return self._get_all_rows(loc.FIELDS)
 
     def get_status_by_id(self, id):
-        statuses = self.get_all_statuses()
-        return statuses.get(id)
+        return self._get_element_by_id(id, loc.FIELDS)

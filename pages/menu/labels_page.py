@@ -25,5 +25,4 @@ class LabelsPage(ListStructureClass):
         return self._get_all_rows(loc.FIELDS)
 
     def get_label_by_id(self, id):
-        labels = self.get_all_labels()
-        return labels.get(id)
+        return self._get_element_by_id(id, loc.FIELDS)

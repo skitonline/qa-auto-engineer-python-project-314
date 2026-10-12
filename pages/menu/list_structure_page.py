@@ -20,31 +20,46 @@ class ListStructureClass(InterfacePage):
         return all(self.type(locator, value) for locator, value in fields)
     
     def _get_all_rows(self, fields):
-        # Ждём, пока таблица появится и в ней будут строки
-        tbody = self.wait.until(EC.presence_of_element_located(loc.TABLE))
-        rows = tbody.find_elements(*loc.ROWS)
+        rows = self.wait.until(EC.presence_of_all_elements_located(
+            loc.ROWS
+        ))
 
         result = {}
         for row in rows:
-            # Находим ячейки в строке
-            cells = row.find_elements(*loc.CELLS)
-
-            # В ячейках есть span с текстом — берём innerText через text
-            def get_text(cell_index):
-                try:
-                    span = cells[cell_index].find_element(*loc.SPAN)
-                    return span.text or ''
-                except Exception:
-                    return ''
+            _, id, *row_fields = row.find_elements(*loc.COLUMN)
 
             row_data = {}
+            id = id.text
             for i in range(len(fields)):
                 field = fields[i]
-                row_data[field] = get_text(i + 1)
-            id = get_text(0)
+                row_data[field] = row_fields[i].text
             result[id] = row_data
 
         return result
 
+    def _get_row_by_id(self, id_row):
+        rows = self.wait.until(EC.presence_of_all_elements_located(
+            loc.ROWS
+        ))
+
+        for row in rows:
+            try:
+                id_cell = row.find_element(*loc.ID_COLUMN)
+                cell_text = id_cell.text
+                if cell_text == id_row:
+                    return row
+            except Exception:
+                continue
+
+        return None
+
+    def _get_element_by_id(self, id, fields):
+        row = self._get_row_by_id(id)
+        data = {}
+        _, _, *fields_row = row.find_elements(*loc.COLUMN)
+        for i in range(len(fields)):
+            field = fields[i]
+            data[field] = fields_row[i].text
+        return data
 
 
