@@ -16,7 +16,7 @@ class StatusesPage(ListStructureClass):
         result = (
             self._validate_name(name)
             and self._validate_slug(slug)
-            and self.add_element(fields)
+            and self._add_element(fields)
         )
 
         self.open_statuses()

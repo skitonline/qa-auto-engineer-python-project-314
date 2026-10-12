@@ -35,3 +35,19 @@ def test_form_edit(labels_page):
     label = labels_page.get_label_by_id('1')
     labels_page.open_element_by_id('1')
     assert label['name'] == labels_page.get_text_from_field(NAME_INPUT)
+
+
+def test_edit_label(labels_page):
+    pass
+
+
+def test_edit_label_with_invalid_name(labels_page):
+    pass
+
+
+def test_delete_some_labels(labels_page):
+    pass
+
+
+def test_delete_all_labels(labels_page):
+    pass

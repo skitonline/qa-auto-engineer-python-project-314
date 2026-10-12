@@ -12,7 +12,7 @@ class LabelsPage(ListStructureClass):
 
         result = (
             self._validate_name(name)
-            and self.add_element(fields)
+            and self._add_element(fields)
         )
 
         self.open_labels()

@@ -5,7 +5,7 @@ from pages.interface_page import InterfacePage
 
 
 class ListStructureClass(InterfacePage):
-    def add_element(self, fields):
+    def _add_element(self, fields):
         if (
             self.click(loc.CREATE_BUTTON)
             and self._input_fields(fields)
@@ -13,8 +13,7 @@ class ListStructureClass(InterfacePage):
         ):
             # возвращаем id из url
             return self.url().rsplit("/", 1)[-1]
-        else:
-            return None
+        return None
 
     def _input_fields(self, fields):
         return all(self.type(locator, value) for locator, value in fields)
@@ -55,6 +54,9 @@ class ListStructureClass(InterfacePage):
 
     def _get_element_by_id(self, id, fields):
         row = self._get_row_by_id(id)
+        if not row:
+            return None
+        
         data = {}
         _, _, *fields_row = row.find_elements(*loc.COLUMN)
         for i in range(len(fields)):
@@ -63,5 +65,7 @@ class ListStructureClass(InterfacePage):
         return data
 
     def open_element_by_id(self, id):
-        self._get_row_by_id(id).click()
-
+        row = self._get_row_by_id(id)
+        if row:
+            row.click()
+        return None

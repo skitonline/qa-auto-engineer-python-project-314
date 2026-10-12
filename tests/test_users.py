@@ -46,6 +46,7 @@ def test_check_all_users(users_page):
         assert users[id]["first_name"]
         assert users[id]['last_name']
 
+
 def test_form_edit(users_page):
     user = users_page.get_user_by_id('1')
     users_page.open_element_by_id('1')
@@ -58,3 +59,27 @@ def test_form_edit(users_page):
     assert user['last_name'] == users_page.get_text_from_field(
         users_loc.LAST_NAME_INPUT
     )
+
+
+def test_edit_user(users_page):
+    pass
+
+
+def test_edit_user_with_invalid_email(users_page):
+    pass
+
+
+def test_edit_user_with_invalid_first_name(users_page):
+    pass
+
+
+def test_edit_user_with_invalid_last_name(users_page):
+    pass
+
+
+def test_delete_some_users(users_page):
+    pass
+
+
+def test_delete_all_users(users_page):
+    pass

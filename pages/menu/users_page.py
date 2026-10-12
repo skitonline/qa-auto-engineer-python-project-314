@@ -20,7 +20,7 @@ class UsersPage(ListStructureClass):
             self._validate_email(email)
             and self._validate_first_name(first_name)
             and self._validate_last_name(last_name)
-            and self.add_element(fields)
+            and self._add_element(fields)
         )
 
         self.open_users()
@@ -40,3 +40,23 @@ class UsersPage(ListStructureClass):
 
     def get_user_by_id(self, id):
         return self._get_element_by_id(id, loc.FIELDS)
+
+    def edit_user(self, id, email=None, first_name=None, last_name=None):
+        user = self._get_row_by_id(id)
+        if not user:
+            return False
+
+        email = email or user['email']
+        first_name = first_name or user['first_name']
+        last_name = last_name or user['last_name']
+
+        if not self._validate(email, first_name, last_name):
+            return False
+
+        return self.edit_row(
+            {
+                self.EMAIL: email,
+                self.FIRST_NAME: first_name,
+                self.LAST_NAME: last_name
+            }
+        )

@@ -48,3 +48,23 @@ def test_form_edit(statuses_page):
     assert status['slug'] == statuses_page.get_text_from_field(
         statuses_loc.SLUG_INPUT
     )
+
+
+def test_edit_status(statuses_page):
+    pass
+
+
+def test_edit_status_with_invalid_name(statuses_page):
+    pass
+
+
+def test_edit_status_with_invalid_slug(statuses_page):
+    pass
+
+
+def test_delete_some_statuses(statuses_page):
+    pass
+
+
+def test_delete_all_statuses(statuses_page):
+    pass
