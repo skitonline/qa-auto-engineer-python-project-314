@@ -2,7 +2,7 @@ import pages.locators.list_structure_locators as list_loc
 import pages.locators.users_locators as users_loc
 
 
-def test_edit_form(users_page):
+def test_form_create(users_page):
     assert users_page.click(list_loc.CREATE_BUTTON)
     assert users_page.is_visibility(users_loc.EMAIL_INPUT)
     assert users_page.is_visibility(users_loc.FIRST_NAME_INPUT)
@@ -32,9 +32,9 @@ def test_added_user_in_table(users_page):
     id = users_page.add_user(email, first_name, last_name)
 
     user = users_page.get_user_by_id(id)
-    assert user['email'] == "test@test.com"
-    assert user['first_name'] == "Test"
-    assert user['last_name'] == "Test"
+    assert user['email'] == email
+    assert user['first_name'] == first_name
+    assert user['last_name'] == last_name
 
 
 def test_check_all_users(users_page):
@@ -45,3 +45,16 @@ def test_check_all_users(users_page):
         assert users[id]['email']
         assert users[id]["first_name"]
         assert users[id]['last_name']
+
+def test_form_edit(users_page):
+    user = users_page.get_user_by_id('1')
+    users_page.open_element_by_id('1')
+    assert user['email'] == users_page.get_text_from_field(
+        users_loc.EMAIL_INPUT
+    )
+    assert user['first_name'] == users_page.get_text_from_field(
+        users_loc.FIRST_NAME_INPUT
+    )
+    assert user['last_name'] == users_page.get_text_from_field(
+        users_loc.LAST_NAME_INPUT
+    )

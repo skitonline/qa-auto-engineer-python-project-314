@@ -17,6 +17,7 @@ class BasePage:
         try:
             el = self.wait.until(EC.visibility_of_element_located(locator))
             el.click()
+            el.clear()
             el.send_keys(value)
             return True
         except Exception:
@@ -32,5 +33,13 @@ class BasePage:
     def is_visibility(self, locator):
         try:
             return self.driver.find_element(*locator).is_displayed()
+        except Exception:
+            return False
+
+    def get_text_from_field(self, locator, value='value'):
+        try:
+            return self.wait.until(
+                EC.visibility_of_element_located(locator)
+            ).get_attribute(value)
         except Exception:
             return False

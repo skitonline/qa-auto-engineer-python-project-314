@@ -33,3 +33,5 @@ class StatusesPage(ListStructureClass):
 
     def get_status_by_id(self, id):
         return self._get_element_by_id(id, loc.FIELDS)
+
+    

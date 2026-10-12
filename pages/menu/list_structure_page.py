@@ -37,7 +37,7 @@ class ListStructureClass(InterfacePage):
 
         return result
 
-    def _get_row_by_id(self, id_row):
+    def _get_row_by_id(self, id):
         rows = self.wait.until(EC.presence_of_all_elements_located(
             loc.ROWS
         ))
@@ -46,7 +46,7 @@ class ListStructureClass(InterfacePage):
             try:
                 id_cell = row.find_element(*loc.ID_COLUMN)
                 cell_text = id_cell.text
-                if cell_text == id_row:
+                if cell_text == id:
                     return row
             except Exception:
                 continue
@@ -62,4 +62,6 @@ class ListStructureClass(InterfacePage):
             data[field] = fields_row[i].text
         return data
 
+    def open_element_by_id(self, id):
+        self._get_row_by_id(id).click()
 

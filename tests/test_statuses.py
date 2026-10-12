@@ -2,7 +2,7 @@ import pages.locators.list_structure_locators as list_loc
 import pages.locators.statuses_locators as statuses_loc
 
 
-def test_edit_form(statuses_page):
+def test_form_create(statuses_page):
     assert statuses_page.click(list_loc.CREATE_BUTTON)
     assert statuses_page.is_visibility(statuses_loc.NAME_INPUT)
     assert statuses_page.is_visibility(statuses_loc.SLUG_INPUT)
@@ -26,8 +26,8 @@ def test_added_status_in_table(statuses_page):
     id = statuses_page.add_status(name, slug)
 
     status = statuses_page.get_status_by_id(id)
-    assert status['name'] == "name"
-    assert status['slug'] == "slug"
+    assert status['name'] == name
+    assert status['slug'] == slug
 
 
 def test_check_all_statuses(statuses_page):
@@ -38,4 +38,13 @@ def test_check_all_statuses(statuses_page):
         assert statuses[id]['name']
         assert statuses[id]["slug"]
 
-        
+
+def test_form_edit(statuses_page):
+    status = statuses_page.get_status_by_id('1')
+    statuses_page.open_element_by_id('1')
+    assert status['name'] == statuses_page.get_text_from_field(
+        statuses_loc.NAME_INPUT
+    )
+    assert status['slug'] == statuses_page.get_text_from_field(
+        statuses_loc.SLUG_INPUT
+    )
