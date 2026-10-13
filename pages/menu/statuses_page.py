@@ -46,6 +46,9 @@ class StatusesPage(ListStructureClass):
                     loc.LOCATORS, 
                     [name, slug]
         )
-        return self._validate_name(name) and self._validate_slug(slug) and self._fill_data(data)
+        return (self._validate_name(name) 
+                and self._validate_slug(slug) 
+                and self._fill_data(data)
+        )
 
     
