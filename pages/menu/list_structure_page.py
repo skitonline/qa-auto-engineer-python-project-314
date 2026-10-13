@@ -8,20 +8,28 @@ class ListStructureClass(InterfacePage):
     def _add_element(self, fields):
         if (
             self.click(loc.CREATE_BUTTON)
-            and self._input_fields(fields)
-            and self.click(loc.SAVE_BUTTON)
+            and self._fill_data(fields)
         ):
             # возвращаем id из url
             return self.url().rsplit("/", 1)[-1]
         return None
 
-    def _input_fields(self, fields):
+    def _fill_data(self, fields):
+        return self._enter_fields(fields) and self.click(loc.SAVE_BUTTON)
+
+    def _create_insert_data(self, locators, values):
+        return zip(locators, values)
+
+    def _enter_fields(self, fields):
         return all(self.type(locator, value) for locator, value in fields)
     
     def _get_all_rows(self, fields):
-        rows = self.wait.until(EC.presence_of_all_elements_located(
-            loc.ROWS
-        ))
+        try:
+            rows = self.wait.until(EC.presence_of_all_elements_located(
+                loc.ROWS
+            ))
+        except Exception:
+            return None
 
         result = {}
         for row in rows:
@@ -58,7 +66,8 @@ class ListStructureClass(InterfacePage):
             return None
         
         data = {}
-        _, _, *fields_row = row.find_elements(*loc.COLUMN)
+        _, id, *fields_row = row.find_elements(*loc.COLUMN)
+        data["id"] = id.text
         for i in range(len(fields)):
             field = fields[i]
             data[field] = fields_row[i].text
@@ -68,4 +77,25 @@ class ListStructureClass(InterfacePage):
         row = self._get_row_by_id(id)
         if row:
             row.click()
+            return True
         return None
+
+    def _delete_row(self, id):
+        row = self._get_row_by_id(id)
+
+        if not row:
+            return False
+
+        checkbox, *_ = row.find_elements(*loc.COLUMN)
+
+        self._select_checkbox(checkbox)
+        return self.click(loc.DELETE_BUTTON)
+
+    def _select_checkbox(self, checkbox):
+        if not checkbox.is_selected():
+            checkbox.click()
+
+    def delete_all(self):
+        el = self.wait.until(EC.presence_of_element_located(loc.SELECT_ALL))
+        self.driver.execute_script("arguments[0].click();", el)
+        self.click(loc.DELETE_BUTTON)

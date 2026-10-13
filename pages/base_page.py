@@ -1,3 +1,4 @@
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
@@ -17,7 +18,7 @@ class BasePage:
         try:
             el = self.wait.until(EC.visibility_of_element_located(locator))
             el.click()
-            el.clear()
+            el.send_keys(Keys.CONTROL + "a")
             el.send_keys(value)
             return True
         except Exception:

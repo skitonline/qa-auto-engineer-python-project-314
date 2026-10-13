@@ -10,21 +10,24 @@ class UsersPage(ListStructureClass):
         self.open_users()
 
     def add_user(self, email, first_name, last_name):
-        fields = [
-            (loc.EMAIL_INPUT, email), 
-            (loc.FIRST_NAME_INPUT, first_name), 
-            (loc.LAST_NAME_INPUT, last_name)
-        ]
+        data = self._create_insert_data(
+            loc.LOCATORS, 
+            [email, first_name, last_name]
+        )
 
         result = (
-            self._validate_email(email)
-            and self._validate_first_name(first_name)
-            and self._validate_last_name(last_name)
-            and self._add_element(fields)
+            self._validate_inputs_values(email, first_name, last_name)
+            and self._add_element(data)
         )
 
         self.open_users()
         return result
+
+    def _validate_inputs_values(self, email, first_name, last_name):
+        return (self._validate_email(email)
+                and self._validate_first_name(first_name)
+                and self._validate_last_name(last_name)
+        )
 
     def _validate_email(self, email):
         return re.match(r'^[^@]+@[^@]+\.[^@]+$', email) is not None
@@ -42,21 +45,27 @@ class UsersPage(ListStructureClass):
         return self._get_element_by_id(id, loc.FIELDS)
 
     def edit_user(self, id, email=None, first_name=None, last_name=None):
-        user = self._get_row_by_id(id)
+        user = self.open_element_by_id(id)
         if not user:
-            return False
+            return None
 
-        email = email or user['email']
-        first_name = first_name or user['first_name']
-        last_name = last_name or user['last_name']
+        email = email or self.get_text_from_field(loc.EMAIL_INPUT)
+        first_name = first_name or self.get_text_from_field(
+            loc.FIRST_NAME_INPUT)
+        last_name = last_name or self.get_text_from_field(loc.LAST_NAME_INPUT)
 
-        if not self._validate(email, first_name, last_name):
-            return False
-
-        return self.edit_row(
-            {
-                self.EMAIL: email,
-                self.FIRST_NAME: first_name,
-                self.LAST_NAME: last_name
-            }
+        data = self._create_insert_data(
+                    loc.LOCATORS, 
+                    [email, first_name, last_name]
         )
+        return (self._validate_inputs_values(email, first_name, last_name) 
+            and self._fill_data(data)
+        )
+
+
+    def delete_user(self, *ids):
+        for id in ids:
+            if not self._delete_row(id):
+                return False
+        return True
+
