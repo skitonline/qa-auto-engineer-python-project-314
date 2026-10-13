@@ -50,21 +50,29 @@ def test_form_edit(statuses_page):
     )
 
 
-def test_edit_status(statuses_page):
-    pass
+def test_edit_status_success(statuses_page):
+    id = '1'
+    name = 'test'
+    slug = 'test'
+    assert statuses_page.edit_status(id, name, slug)
+
+    edit_status = statuses_page.get_status_by_id(id)
+    assert edit_status['id'] == id
+    assert edit_status['name'] == name
+    assert edit_status['slug'] == slug
 
 
-def test_edit_status_with_invalid_name(statuses_page):
-    pass
-
-
-def test_edit_status_with_invalid_slug(statuses_page):
-    pass
+def test_edit_status_with_invalid_id(statuses_page):
+    assert not statuses_page.edit_status('228')
 
 
 def test_delete_some_statuses(statuses_page):
-    pass
+    assert statuses_page.delete_some_rows('1', '2')
+    assert not statuses_page.get_status_by_id('1')
+    assert not statuses_page.get_status_by_id('2')
 
 
 def test_delete_all_statuses(statuses_page):
-    pass
+    assert statuses_page.get_all_statuses()
+    statuses_page.delete_all()
+    assert not statuses_page.get_all_statuses()

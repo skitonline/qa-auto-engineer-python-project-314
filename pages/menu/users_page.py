@@ -62,10 +62,3 @@ class UsersPage(ListStructureClass):
             and self._fill_data(data)
         )
 
-
-    def delete_user(self, *ids):
-        for id in ids:
-            if not self._delete_row(id):
-                return False
-        return True
-

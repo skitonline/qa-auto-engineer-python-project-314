@@ -10,6 +10,7 @@ class ListStructureClass(InterfacePage):
             self.click(loc.CREATE_BUTTON)
             and self._fill_data(fields)
         ):
+            print('help')
             # возвращаем id из url
             return self.url().rsplit("/", 1)[-1]
         return None
@@ -90,6 +91,12 @@ class ListStructureClass(InterfacePage):
 
         self._select_checkbox(checkbox)
         return self.click(loc.DELETE_BUTTON)
+
+    def delete_some_rows(self, *ids):
+        for id in ids:
+            if not self._delete_row(id):
+                return False
+        return True
 
     def _select_checkbox(self, checkbox):
         if not checkbox.is_selected():

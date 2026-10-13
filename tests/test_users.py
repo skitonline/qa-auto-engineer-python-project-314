@@ -84,7 +84,7 @@ def test_edit_user_with_invalid_email(users_page):
 
 
 def test_delete_some_users(users_page):
-    assert users_page.delete_user('1', '2')
+    assert users_page.delete_some_rows('1', '2')
     assert not users_page.get_user_by_id('1')
     assert not users_page.get_user_by_id('2')
 

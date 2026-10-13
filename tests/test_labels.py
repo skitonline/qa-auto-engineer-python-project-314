@@ -37,17 +37,27 @@ def test_form_edit(labels_page):
     assert label['name'] == labels_page.get_text_from_field(NAME_INPUT)
 
 
-def test_edit_label(labels_page):
-    pass
+def test_edit_label_success(labels_page):
+    id = '1'
+    name = 'test'
+    assert labels_page.edit_label(id, name)
+
+    edit_label = labels_page.get_label_by_id(id)
+    assert edit_label['id'] == id
+    assert edit_label['name'] == name
 
 
-def test_edit_label_with_invalid_name(labels_page):
-    pass
+def test_edit_label_with_invalid_id(labels_page):
+    assert not labels_page.edit_label('9232')
 
 
 def test_delete_some_labels(labels_page):
-    pass
+    assert labels_page.delete_some_rows('1', '2')
+    assert not labels_page.get_label_by_id('1')
+    assert not labels_page.get_label_by_id('2')
 
 
 def test_delete_all_labels(labels_page):
-    pass
+    assert labels_page.get_all_labels()
+    labels_page.delete_all()
+    assert not labels_page.get_all_labels()
