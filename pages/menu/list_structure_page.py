@@ -1,4 +1,5 @@
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 
 import pages.locators.list_structure_locators as loc
 from pages.interface_page import InterfacePage
@@ -24,11 +25,13 @@ class ListStructureClass(InterfacePage):
     def _enter_fields(self, fields):
         return all(self.type(locator, value) for locator, value in fields)
     
-    def _get_all_rows(self, fields):
+    def _get_all_rows(self, fields, wait_timeout=3):
+        # ждём появления строк, но не дольше wait_timeout: если таблица
+        # пуста, не нужно ждать полный таймаут страницы (20 секунд)
         try:
-            rows = self.wait.until(EC.presence_of_all_elements_located(
-                loc.ROWS
-            ))
+            rows = WebDriverWait(self.driver, wait_timeout).until(
+                EC.presence_of_all_elements_located(loc.ROWS)
+            )
         except Exception:
             return None
 
@@ -106,3 +109,7 @@ class ListStructureClass(InterfacePage):
         el = self.wait.until(EC.presence_of_element_located(loc.SELECT_ALL))
         self.driver.execute_script("arguments[0].click();", el)
         self.click(loc.DELETE_BUTTON)
+        self.wait.until(self._is_table_empty)
+
+    def _is_table_empty(self, driver):
+        return len(driver.find_elements(*loc.ROWS)) == 0
