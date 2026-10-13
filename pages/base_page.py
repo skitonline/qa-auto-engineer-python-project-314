@@ -4,7 +4,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 
 class BasePage:
-    def __init__(self, driver, timeout=15):
+    def __init__(self, driver, timeout=30):
         self.driver = driver
         self.wait = WebDriverWait(driver, timeout)
 
@@ -33,7 +33,7 @@ class BasePage:
 
     def is_visibility(self, locator):
         try:
-            return self.driver.find_element(*locator).is_displayed()
+            return self.wait.until(EC.visibility_of_element_located(locator))
         except Exception:
             return False
 
