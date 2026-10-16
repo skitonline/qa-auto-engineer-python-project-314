@@ -1,6 +1,6 @@
 # Тестирование канбан-доски
 
-[![hexlet-check](https://github.com/skitonline/qa-auto-engineer-python-project-314/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/skitonline/qa-auto-engineer-python-project-314/actions)
+[![hexlet-check](https://github.com/skitonline/qa-auto-engineer-python-project-314/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/skitonline/qa-auto-engineer-python-project-314/actions)[![CI](https://github.com/skitonline/qa-auto-engineer-python-project-314/actions/workflows/ci.yml/badge.svg)](https://github.com/skitonline/qa-auto-engineer-python-project-314/actions/workflows/ci.yml)
 
 UI-автотесты для приложения Task Manager (канбан-доска): Python, Selenium, pytest.
 Взаимодействие со страницами оформлено по паттерну Page Object.
@@ -41,6 +41,12 @@ make install
 make start
 ```
 
+## Проверить код линтером
+
+```bash
+make check
+```
+
 ## Запуск тестов
 
 ```bash
@@ -50,6 +56,7 @@ make test
 ## CI
 
 - **hexlet-check** — служебная проверка Hexlet
+- **CI** - Мой CI, который запускает контейнер сайта, проверяет линтинг и прогоняет тест 
 
 ## Настройка окружения
 
@@ -57,3 +64,5 @@ make test
 |Переменная|Назначение|По умолчанию|
 |:---|:---|:---|
 |`APP_BASE_URL`|адрес тестируемого приложения|`http://localhost:5173`|
+|`LOGIN`|адрес тестируемого приложения|`test`|
+|`PASSWORD`|адрес тестируемого приложения|`test`|

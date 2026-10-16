@@ -4,7 +4,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 
 class BasePage:
-    def __init__(self, driver, timeout=20):
+    def __init__(self, driver, timeout=10):
         self.driver = driver
         self.wait = WebDriverWait(driver, timeout)
 
@@ -15,6 +15,8 @@ class BasePage:
         self.driver.get(url)
 
     def type(self, locator, value):
+        if value == '':
+            return True
         try:
             el = self.wait.until(EC.visibility_of_element_located(locator))
             el.click()
@@ -33,14 +35,51 @@ class BasePage:
 
     def is_visibility(self, locator):
         try:
-            return self.wait.until(EC.visibility_of_element_located(locator))
+            self.wait.until(EC.visibility_of_element_located(locator))
+            return True
         except Exception:
             return False
 
-    def get_text_from_field(self, locator, value='value'):
+    def get_value(self, locator):
         try:
             return self.wait.until(
                 EC.visibility_of_element_located(locator)
-            ).get_attribute(value)
+            ).get_attribute('value')
+        except Exception:
+            return False
+
+    def get_text(self, locator):
+        try:
+            return self.wait.until(
+                EC.visibility_of_element_located(locator)
+            ).text
+        except Exception:
+            return False
+
+    def get_text_from_field(self, locator):
+        """Возвращает text элемента (не value атрибут)."""
+        try:
+            return self.wait.until(
+                EC.visibility_of_element_located(locator)
+            ).text
+        except Exception:
+            return False
+
+    def wait_for_element(self, locator):
+        try:
+            return self.wait.until(EC.presence_of_element_located(locator))
+        except Exception:
+            return False
+
+    def wait_for_elements(self, locator):
+        try:
+            return self.wait.until(EC.presence_of_all_elements_located(locator))
+        except Exception:
+            return False
+
+    def wait_url_not_contains(self, substring):
+        try:
+            self.wait.until(lambda d: substring not in d.current_url)
+            return True
         except Exception:
             return False

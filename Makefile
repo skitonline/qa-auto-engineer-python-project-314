@@ -4,9 +4,6 @@ start:
 install:
 	uv sync
 
-setup:
-	uv sync
-
 check:
 	uv run ruff check .
 

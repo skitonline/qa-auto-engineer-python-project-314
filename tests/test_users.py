@@ -50,13 +50,13 @@ def test_check_all_users(users_page):
 def test_form_edit(users_page):
     user = users_page.get_user_by_id('1')
     users_page.open_element_by_id('1')
-    assert user['email'] == users_page.get_text_from_field(
+    assert user['email'] == users_page.get_value(
         users_loc.EMAIL_INPUT
     )
-    assert user['first_name'] == users_page.get_text_from_field(
+    assert user['first_name'] == users_page.get_value(
         users_loc.FIRST_NAME_INPUT
     )
-    assert user['last_name'] == users_page.get_text_from_field(
+    assert user['last_name'] == users_page.get_value(
         users_loc.LAST_NAME_INPUT
     )
 
@@ -80,13 +80,24 @@ def test_edit_user_with_invalid_id(users_page):
 
 
 def test_edit_user_with_invalid_email(users_page):
-    assert not users_page.edit_user('1', '@')
+    email = "unique@test.com"
+    user_id = users_page.add_user(email, "Test", "User")
+
+    users_page.edit_user(user_id, '@')
+    user = users_page.get_user_by_id(user_id)
+    assert user['email'] == email
 
 
 def test_delete_some_users(users_page):
-    assert users_page.delete_some_rows('1', '2')
-    assert not users_page.get_user_by_id('1')
-    assert not users_page.get_user_by_id('2')
+    id1 = users_page.add_user("del1@test.com", "Del", "One")
+    id2 = users_page.add_user("del2@test.com", "Del", "Two")
+
+    assert users_page.get_user_by_id(id1)
+    assert users_page.get_user_by_id(id2)
+    users_page.delete_some_rows(id1, id2)
+
+    assert not users_page.get_user_by_id(id1)
+    assert not users_page.get_user_by_id(id2)
 
 
 def test_delete_all_users(users_page):

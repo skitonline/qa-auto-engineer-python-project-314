@@ -15,13 +15,6 @@ class TasksPage(ListStructureClass):
 
     def add_task(self, title, status, assignee, label=None, content=None):
         """Создаёт задачу и возвращает её id (или None при ошибке)."""
-        if not (
-            self._validate_title(title)
-            and self._validate_status(status)
-            and self._validate_assignee(assignee)
-        ):
-            return None
-
         if not self.click(list_loc.CREATE_BUTTON):
             return None
 
@@ -57,15 +50,6 @@ class TasksPage(ListStructureClass):
 
         self.open_tasks()
         return task_id
-
-    def _validate_title(self, title):
-        return len(title) > 0
-
-    def _validate_status(self, status):
-        return len(status) > 0
-
-    def _validate_assignee(self, assignee):
-        return len(assignee) > 0
 
     def _select_option(self, input_locator, option_text):
         """Открывает выпадающий список и выбирает в нём пункт по тексту."""
@@ -307,7 +291,7 @@ class TasksPage(ListStructureClass):
 
     def _record_is_loaded(self, driver):
         """True, когда в форме появились данные задачи."""
-        return self.get_text_from_field(loc.TITLE_INPUT) != ""
+        return self.get_value(loc.TITLE_INPUT) != ""
 
     def _find_card_by_title(self, title):
         """Ищет карточку задачи на доске по заголовку."""

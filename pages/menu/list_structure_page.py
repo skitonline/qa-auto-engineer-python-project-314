@@ -1,5 +1,5 @@
+from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
 
 import pages.locators.list_structure_locators as loc
 from pages.interface_page import InterfacePage
@@ -7,12 +7,12 @@ from pages.interface_page import InterfacePage
 
 class ListStructureClass(InterfacePage):
     def _add_element(self, fields):
-        if (
-            self.click(loc.CREATE_BUTTON)
-            and self._fill_data(fields)
-        ):
-            print('help')
-            # возвращаем id из url
+        if not self.click(loc.CREATE_BUTTON):
+            return None
+        if not self._fill_data(fields):
+            return None
+
+        if self.wait_url_not_contains('create'):
             return self.url().rsplit("/", 1)[-1]
         return None
 
@@ -24,15 +24,10 @@ class ListStructureClass(InterfacePage):
 
     def _enter_fields(self, fields):
         return all(self.type(locator, value) for locator, value in fields)
-    
-    def _get_all_rows(self, fields, wait_timeout=3):
-        # ждём появления строк, но не дольше wait_timeout: если таблица
-        # пуста, не нужно ждать полный таймаут страницы (20 секунд)
-        try:
-            rows = WebDriverWait(self.driver, wait_timeout).until(
-                EC.presence_of_all_elements_located(loc.ROWS)
-            )
-        except Exception:
+
+    def _get_all_rows(self, fields):
+        rows = self.wait_for_elements(loc.ROWS)
+        if not rows:
             return None
 
         result = {}
@@ -49,18 +44,15 @@ class ListStructureClass(InterfacePage):
         return result
 
     def _get_row_by_id(self, id):
-        rows = self.wait.until(EC.presence_of_all_elements_located(
-            loc.ROWS
-        ))
+        rows = self.wait_for_elements(loc.ROWS)
+        if not rows:
+            return None
 
         for row in rows:
-            try:
-                id_cell = row.find_element(*loc.ID_COLUMN)
-                cell_text = id_cell.text
-                if cell_text == id:
-                    return row
-            except Exception:
-                continue
+            id_cell = row.find_element(*loc.ID_COLUMN)
+            cell_text = id_cell.text
+            if cell_text == id:
+                return row
 
         return None
 
@@ -68,10 +60,10 @@ class ListStructureClass(InterfacePage):
         row = self._get_row_by_id(id)
         if not row:
             return None
-        
+
         data = {}
-        _, id, *fields_row = row.find_elements(*loc.COLUMN)
-        data["id"] = id.text
+        _, id_el, *fields_row = row.find_elements(*loc.COLUMN)
+        data["id"] = id_el.text
         for i in range(len(fields)):
             field = fields[i]
             data[field] = fields_row[i].text
@@ -81,25 +73,20 @@ class ListStructureClass(InterfacePage):
         row = self._get_row_by_id(id)
         if row:
             row.click()
-            return True
+            return row
         return None
 
-    def _delete_row(self, id):
-        row = self._get_row_by_id(id)
-
-        if not row:
-            return False
-
-        checkbox, *_ = row.find_elements(*loc.COLUMN)
-
-        self._select_checkbox(checkbox)
-        return self.click(loc.DELETE_BUTTON)
-
     def delete_some_rows(self, *ids):
-        for id in ids:
-            if not self._delete_row(id):
-                return False
-        return True
+        rows = self.wait_for_elements(loc.ROWS)
+        ids_str = {str(i) for i in ids}
+
+        for row in rows:
+            row_id = row.find_element(*loc.ID_COLUMN).text
+            if row_id in ids_str:
+                checkbox = row.find_element(By.CSS_SELECTOR, "input[type='checkbox']")
+                self._select_checkbox(checkbox)
+
+        return self.click(loc.DELETE_BUTTON)
 
     def _select_checkbox(self, checkbox):
         if not checkbox.is_selected():
@@ -111,5 +98,7 @@ class ListStructureClass(InterfacePage):
         self.click(loc.DELETE_BUTTON)
         self.wait.until(self._is_table_empty)
 
-    def _is_table_empty(self, driver):
-        return len(driver.find_elements(*loc.ROWS)) == 0
+    @staticmethod
+    def _is_table_empty(driver):
+        rows = driver.find_elements(*loc.ROWS)
+        return len(rows) == 0

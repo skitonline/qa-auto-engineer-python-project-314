@@ -1,6 +1,8 @@
 from pages.locators.labels_locators import NAME_INPUT
 from pages.locators.list_structure_locators import CREATE_BUTTON
 
+COUNT_LABELS_IN_TABLE = 5
+
 
 def test_form_create(labels_page):
     assert labels_page.click(CREATE_BUTTON)
@@ -24,7 +26,6 @@ def test_added_label_in_table(labels_page):
 
 
 def test_check_all_labels(labels_page):
-    COUNT_LABELS_IN_TABLE = 5
     labels = labels_page.get_all_labels()
     assert COUNT_LABELS_IN_TABLE == len(labels)
     for id in labels:
@@ -34,7 +35,7 @@ def test_check_all_labels(labels_page):
 def test_form_edit(labels_page):
     label = labels_page.get_label_by_id('1')
     labels_page.open_element_by_id('1')
-    assert label['name'] == labels_page.get_text_from_field(NAME_INPUT)
+    assert label['name'] == labels_page.get_value(NAME_INPUT)
 
 
 def test_edit_label_success(labels_page):
@@ -51,8 +52,15 @@ def test_edit_label_with_invalid_id(labels_page):
     assert not labels_page.edit_label('9232')
 
 
+def test_edit_label_with_invalid_name(labels_page):
+    assert not labels_page.edit_label('1', '')
+
+
 def test_delete_some_labels(labels_page):
-    assert labels_page.delete_some_rows('1', '2')
+    assert labels_page.get_label_by_id('1')
+    assert labels_page.get_label_by_id('2')
+    labels_page.delete_some_rows('1', '2')
+    
     assert not labels_page.get_label_by_id('1')
     assert not labels_page.get_label_by_id('2')
 

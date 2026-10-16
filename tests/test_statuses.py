@@ -2,6 +2,9 @@ import pages.locators.list_structure_locators as list_loc
 import pages.locators.statuses_locators as statuses_loc
 
 
+COUNT_STATUSES_IN_TABLE = 5
+
+
 def test_form_create(statuses_page):
     assert statuses_page.click(list_loc.CREATE_BUTTON)
     assert statuses_page.is_visibility(statuses_loc.NAME_INPUT)
@@ -31,7 +34,6 @@ def test_added_status_in_table(statuses_page):
 
 
 def test_check_all_statuses(statuses_page):
-    COUNT_STATUSES_IN_TABLE = 5
     statuses = statuses_page.get_all_statuses()
     assert COUNT_STATUSES_IN_TABLE == len(statuses)
     for id in statuses:
@@ -42,10 +44,11 @@ def test_check_all_statuses(statuses_page):
 def test_form_edit(statuses_page):
     status = statuses_page.get_status_by_id('1')
     statuses_page.open_element_by_id('1')
-    assert status['name'] == statuses_page.get_text_from_field(
+
+    assert status['name'] == statuses_page.get_value(
         statuses_loc.NAME_INPUT
     )
-    assert status['slug'] == statuses_page.get_text_from_field(
+    assert status['slug'] == statuses_page.get_value(
         statuses_loc.SLUG_INPUT
     )
 
@@ -67,7 +70,10 @@ def test_edit_status_with_invalid_id(statuses_page):
 
 
 def test_delete_some_statuses(statuses_page):
-    assert statuses_page.delete_some_rows('1', '2')
+    assert statuses_page.get_status_by_id('1')
+    assert statuses_page.get_status_by_id('2')
+    statuses_page.delete_some_rows('1', '2')
+
     assert not statuses_page.get_status_by_id('1')
     assert not statuses_page.get_status_by_id('2')
 

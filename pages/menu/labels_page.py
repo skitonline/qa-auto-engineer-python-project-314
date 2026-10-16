@@ -10,14 +10,10 @@ class LabelsPage(ListStructureClass):
     def add_label(self, name):
         data = self._create_insert_data(loc.LOCATORS, [name, ])
 
-        result = self._validate_name(name) and self._add_element(data)
-        print(result)
+        result = self._add_element(data)
 
         self.open_labels()
         return result
-
-    def _validate_name(self, name):
-        return len(name) > 0
 
     def get_all_labels(self):
         return self._get_all_rows(loc.FIELDS)
@@ -29,8 +25,10 @@ class LabelsPage(ListStructureClass):
         label = self.open_element_by_id(id)
         if not label:
             return None
+        self.wait_for_element(loc.NAME_INPUT)
 
-        name = name or self.get_text_from_field(loc.NAME_INPUT)
+        if name is None:
+            name =  self.get_value(loc.NAME_INPUT)
 
         data = self._create_insert_data(loc.LOCATORS, [name, ])
-        return self._validate_name(name) and self._fill_data(data)
+        return self._fill_data(data)
