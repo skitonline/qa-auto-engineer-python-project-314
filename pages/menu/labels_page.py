@@ -28,7 +28,7 @@ class LabelsPage(ListStructureClass):
         self.wait_for_element(loc.NAME_INPUT)
 
         if name is None:
-            name =  self.get_value(loc.NAME_INPUT)
+            name = self.get_value(loc.NAME_INPUT)
 
         data = self._create_insert_data(loc.LOCATORS, [name, ])
         return self._fill_data(data)

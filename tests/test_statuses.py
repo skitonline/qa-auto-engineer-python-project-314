@@ -1,7 +1,6 @@
 import pages.locators.list_structure_locators as list_loc
 import pages.locators.statuses_locators as statuses_loc
 
-
 COUNT_STATUSES_IN_TABLE = 5
 
 

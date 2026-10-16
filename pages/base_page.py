@@ -69,13 +69,13 @@ class BasePage:
         try:
             return self.wait.until(EC.presence_of_element_located(locator))
         except Exception:
-            return False
+            return None
 
     def wait_for_elements(self, locator):
         try:
             return self.wait.until(EC.presence_of_all_elements_located(locator))
         except Exception:
-            return False
+            return []
 
     def wait_url_not_contains(self, substring):
         try:

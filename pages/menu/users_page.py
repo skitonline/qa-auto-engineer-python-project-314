@@ -1,4 +1,3 @@
-import pages.locators.list_structure_locators as loc
 import pages.locators.users_locators as locs
 from pages.menu.list_structure_page import ListStructureClass
 

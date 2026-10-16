@@ -1,4 +1,3 @@
-from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 
 import pages.locators.list_structure_locators as loc
@@ -78,15 +77,18 @@ class ListStructureClass(InterfacePage):
 
     def delete_some_rows(self, *ids):
         rows = self.wait_for_elements(loc.ROWS)
+        before_delete = len(rows)
         ids_str = {str(i) for i in ids}
 
         for row in rows:
             row_id = row.find_element(*loc.ID_COLUMN).text
             if row_id in ids_str:
-                checkbox = row.find_element(By.CSS_SELECTOR, "input[type='checkbox']")
+                checkbox = row.find_element(*loc.CHECKBOX)
                 self._select_checkbox(checkbox)
 
-        return self.click(loc.DELETE_BUTTON)
+        self.click(loc.DELETE_BUTTON)
+        after_delete = len(self.wait_for_elements(loc.ROWS))
+        return before_delete - after_delete == len(ids)
 
     def _select_checkbox(self, checkbox):
         if not checkbox.is_selected():
