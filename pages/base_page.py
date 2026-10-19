@@ -56,15 +56,6 @@ class BasePage:
         except Exception:
             return False
 
-    def get_text_from_field(self, locator):
-        """Возвращает text элемента (не value атрибут)."""
-        try:
-            return self.wait.until(
-                EC.visibility_of_element_located(locator)
-            ).text
-        except Exception:
-            return False
-
     def wait_for_element(self, locator):
         try:
             return self.wait.until(EC.presence_of_element_located(locator))

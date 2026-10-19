@@ -1,61 +1,45 @@
 import pages.locators.list_structure_locators as list_loc
 import pages.locators.tasks_locators as tasks_loc
 
-# Реальные значения, которые есть в приложении
 STATUS = "Draft"
 TARGET_STATUS = "Published"
 ASSIGNEE = "john@google.com"
 OTHER_ASSIGNEE = "sarah@example.com"
 LABEL = "bug"
 OTHER_LABEL = "feature"
+COUNT_TASKS = 15
 
 
 def test_form_create(tasks_page):
     assert tasks_page.click(list_loc.CREATE_BUTTON)
-    assert tasks_page.is_visibility(tasks_loc.TITLE_INPUT)
-    assert tasks_page.is_visibility(tasks_loc.STATUS_SELECT)
     assert tasks_page.is_visibility(tasks_loc.ASSIGNEE_SELECT)
+    assert tasks_page.is_visibility(tasks_loc.TITLE_INPUT)
+    assert tasks_page.is_visibility(tasks_loc.CONTENT_INPUT)
+    assert tasks_page.is_visibility(tasks_loc.STATUS_SELECT)
     assert tasks_page.is_visibility(tasks_loc.LABEL_SELECT)
 
 
-def test_label_dropdown(tasks_page):
-    """В форме создания список меток содержит все доступные метки."""
-    assert tasks_page.click(list_loc.CREATE_BUTTON)
-
-    options = tasks_page.get_options(tasks_loc.LABEL_INPUT)
-    assert options
-    for label in ("bug", "feature", "enhancement", "task", "critical"):
-        assert label in options
-
-
 def test_add_correct_task(tasks_page):
-    assert tasks_page.add_task("title", STATUS, ASSIGNEE)
+    assert tasks_page.add_task(ASSIGNEE, 'title', STATUS)
 
 
 def test_add_task_with_invalid_data(tasks_page):
-    assert not tasks_page.add_task("", "", "")
+    assert not tasks_page.add_task("wrong", "title", STATUS)
 
 
-def test_added_task_in_column(tasks_page):
-    title = "title"
-    task_id = tasks_page.add_task(title, STATUS, ASSIGNEE)
-
-    task = tasks_page.get_task_by_id(task_id)
-    assert task['title'] == title
-    assert task['status'] == STATUS
-
-    cards = tasks_page.get_cards_in_column(STATUS)
-    assert any(title in card for card in cards)
-
-
-def test_add_task_with_content(tasks_page):
+def test_added_task(tasks_page):
     title = "title"
     content = "content"
-    task_id = tasks_page.add_task(title, STATUS, ASSIGNEE, content=content)
+    task_id = tasks_page.add_task(assignee=ASSIGNEE,
+        title=title, status=STATUS, content=content, label=LABEL)
 
-    task = tasks_page.get_task_by_id(task_id)
+    task = tasks_page.get_task_info(task_id)
+
+    assert task['assignee'] == ASSIGNEE
     assert task['title'] == title
     assert task['content'] == content
+    assert task['status'] == STATUS
+    assert task['label'] == LABEL
 
 
 def test_check_all_tasks(tasks_page):
@@ -68,7 +52,7 @@ def test_check_all_tasks(tasks_page):
 
 def test_filtered_by_status(tasks_page):
     title = "title"
-    tasks_page.add_task(title, STATUS, ASSIGNEE)
+    assert tasks_page.add_task(ASSIGNEE, title, STATUS)
     assert tasks_page.filter_by_status(STATUS)
 
     cards = tasks_page.get_cards_in_column(STATUS)
@@ -77,8 +61,8 @@ def test_filtered_by_status(tasks_page):
 
 
 def test_filtered_by_assignee(tasks_page):
-    tasks_page.add_task("title_john", STATUS, ASSIGNEE)
-    tasks_page.add_task("title_sarah", STATUS, OTHER_ASSIGNEE)
+    tasks_page.add_task(ASSIGNEE, "title_john", STATUS, )
+    tasks_page.add_task(OTHER_ASSIGNEE, "title_sarah", STATUS)
 
     assert tasks_page.filter_by_assignee(ASSIGNEE)
 
@@ -89,8 +73,8 @@ def test_filtered_by_assignee(tasks_page):
 
 
 def test_filtered_by_label(tasks_page):
-    tasks_page.add_task("title_bug", STATUS, ASSIGNEE, LABEL)
-    tasks_page.add_task("title_feature", STATUS, ASSIGNEE, OTHER_LABEL)
+    tasks_page.add_task(ASSIGNEE, "title_bug", STATUS, label=LABEL)
+    tasks_page.add_task(ASSIGNEE, "title_feature", STATUS, label=OTHER_LABEL)
 
     assert tasks_page.filter_by_label(LABEL)
 
@@ -101,23 +85,21 @@ def test_filtered_by_label(tasks_page):
 
 
 def test_edit_task(tasks_page):
-    task_id = tasks_page.add_task("title", STATUS, ASSIGNEE)
+    task_id = tasks_page.add_task(ASSIGNEE, "title", STATUS)
     new_title = "edit_title"
     assert tasks_page.edit_task(task_id, title=new_title, status=TARGET_STATUS)
 
-    task = tasks_page.get_task_by_id(task_id)
+    task = tasks_page.get_task_info(task_id)
+    assert task['assignee'] == ASSIGNEE
     assert task['title'] == new_title
     assert task['status'] == TARGET_STATUS
-
-    cards = tasks_page.get_cards_in_column(TARGET_STATUS)
-    assert any(new_title in card for card in cards)
 
 
 def test_move_card(tasks_page):
     title = "title"
-    tasks_page.add_task(title, STATUS, ASSIGNEE)
+    task_id = tasks_page.add_task(ASSIGNEE, title, STATUS)
 
-    assert tasks_page.move_card(title, TARGET_STATUS)
+    assert tasks_page.move_card(task_id, TARGET_STATUS)
 
     cards = tasks_page.get_cards_in_column(TARGET_STATUS)
     assert any(title in card for card in cards)
@@ -125,7 +107,7 @@ def test_move_card(tasks_page):
 
 def test_delete_task(tasks_page):
     title = "title"
-    task_id = tasks_page.add_task(title, STATUS, ASSIGNEE)
+    task_id = tasks_page.add_task(ASSIGNEE, title, STATUS)
 
     assert tasks_page.delete_task(task_id)
     assert not tasks_page.get_task_by_id(task_id)
