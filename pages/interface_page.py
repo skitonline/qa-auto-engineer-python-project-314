@@ -6,7 +6,6 @@ class InterfacePage(BasePage):
     def logout(self):
         return self.click(loc.PROFILE_ICON) and self.click(loc.LOGOUT_BUTTON)
 
-
     def open_users(self):
         self.click(loc.USERS_LINK)
 
