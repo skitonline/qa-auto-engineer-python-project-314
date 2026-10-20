@@ -24,10 +24,16 @@ jobs:
       - name: Sync dependencies
         run: uv sync --no-dev
 
-      - name: Run SonarCloud analysis
+      - name: Run tests with coverage
+        run: coverage run -m pytest tests/
+
+      - name: Generate coverage XML
+        run: coverage xml
+
+      - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@v3
         with:
           projectBaseDir: .
         env:
-          SONAR_TOKEN: \${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: \${{ secrets.SONAR_HOST_URL }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
