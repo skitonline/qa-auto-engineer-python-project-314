@@ -62,7 +62,7 @@ class TasksPage(ListStructureClass):
         try:
             backdrops = self.driver.find_elements(*loc.BACKDROP)
             if backdrops:
-                backdrops[0].click()
+                self.driver.execute_script("arguments[0].click();", backdrops[0])
         except Exception:
             pass
 
@@ -123,6 +123,9 @@ class TasksPage(ListStructureClass):
             return None
 
         self.open_tasks()
+        self.wait.until(
+            lambda d: '/tasks/' not in d.current_url or d.current_url.endswith('/tasks')
+        )
         self.wait_for_elements(loc.COLUMN)
         return True
 
@@ -136,7 +139,9 @@ class TasksPage(ListStructureClass):
         if not self.click(list_loc.DELETE_BUTTON):
             return False
 
-        self.wait_for_elements(loc.CARD)
+        self.wait.until(
+            lambda d: self.get_task_by_id(id) is None
+        )
         return True
 
     def filter_by_status(self, status):
@@ -186,9 +191,12 @@ class TasksPage(ListStructureClass):
         return self.get_value(loc.TITLE_INPUT) != ""
 
     def _find_card_by_id(self, id):
-        cards = self.wait_for_elements(loc.CARD)
-
-        for card in cards:
-            if card.get_attribute("data-rfd-draggable-id") == str(id):
-                return card
+        for _ in range(3):
+            cards = self.wait_for_elements(loc.CARD)
+            for card in cards:
+                try:
+                    if card.get_attribute("data-rfd-draggable-id") == str(id):
+                        return card
+                except Exception:
+                    continue
         return None

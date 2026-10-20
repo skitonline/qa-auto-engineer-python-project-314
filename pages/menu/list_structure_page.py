@@ -43,15 +43,18 @@ class ListStructureClass(InterfacePage):
         return result
 
     def _get_row_by_id(self, id):
-        rows = self.wait_for_elements(loc.ROWS)
-        if not rows:
-            return None
+        for _ in range(3):
+            rows = self.wait_for_elements(loc.ROWS)
+            if not rows:
+                return None
 
-        for row in rows:
-            id_cell = row.find_element(*loc.ID_COLUMN)
-            cell_text = id_cell.text
-            if cell_text == id:
-                return row
+            for row in rows:
+                try:
+                    id_cell = row.find_element(*loc.ID_COLUMN)
+                    if id_cell.text == id:
+                        return row
+                except Exception:
+                    continue
 
         return None
 
