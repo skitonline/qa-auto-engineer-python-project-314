@@ -96,7 +96,7 @@ class ListStructureClass(InterfacePage):
 
     def delete_all(self):
         el = self.wait.until(EC.presence_of_element_located(loc.SELECT_ALL))
-        self.driver.execute_script("arguments[0].click();", el)
+        el.click()
         self.click(loc.DELETE_BUTTON)
         self.wait.until(self._is_table_empty)
 

@@ -40,7 +40,6 @@ class TasksPage(ListStructureClass):
         if (label is not None
             and not self._select_option(loc.LABEL_SELECT, label)):
             return False
-        self._wait_no_backdrop()
         if not self.click(list_loc.SAVE_BUTTON):
             return False
         return True
@@ -48,26 +47,24 @@ class TasksPage(ListStructureClass):
     def _select_option(self, locator, option):
         if not self.click(locator):
             return False
-        if not self.wait_for_element(loc.FILTER_OPTION):
-            return False
 
         option_locator = (By.XPATH,
             f'//li[@role="option"][normalize-space(.) = "{option}"]')
-        if not self.click(option_locator):
+        option_el = self.wait_for_element(option_locator)
+        if not option_el:
             return False
+        self.driver.execute_script("arguments[0].click();", option_el)
 
         self._close_dropdown()
         return True
 
     def _close_dropdown(self):
-        return self.click(loc.BACKDROP)
-
-    def _wait_no_backdrop(self):
-        self.wait.until(
-            lambda d: not any(
-                b.is_displayed() for b in d.find_elements(*loc.BACKDROP)
-            ),
-        )
+        try:
+            backdrops = self.driver.find_elements(*loc.BACKDROP)
+            if backdrops:
+                backdrops[0].click()
+        except Exception:
+            pass
 
     def get_all_tasks(self):
         columns = self.wait_for_elements(loc.COLUMN)
@@ -152,14 +149,17 @@ class TasksPage(ListStructureClass):
         return self._apply_filter(loc.LABEL_SELECT, label)
 
     def _apply_filter(self, locator, value):
-        if not self._select_option(locator, value):
+        if not self.click(locator):
             return False
+        option_locator = (By.XPATH,
+            f'//li[@role="option"][normalize-space(.) = "{value}"]')
+        option_el = self.wait_for_element(option_locator)
+        if not option_el:
+            return False
+        self.driver.execute_script("arguments[0].click();", option_el)
+        self._close_dropdown()
+        self.wait.until(EC.url_contains("filter="))
         self.wait_for_elements(loc.CARD)
-
-        try:
-            self.wait.until(EC.url_contains("filter="))
-        except Exception:
-            return False
         return True
 
     def get_cards_in_column(self, column_name):
@@ -173,20 +173,14 @@ class TasksPage(ListStructureClass):
                     card.find_element(*loc.CARD_TITLE).text
                     for card in cards
                 ]
-        return None
-
-    def _count_cards(self):
-        return len(self.driver.find_elements(*loc.CARD))
+        return []
 
     def move_card(self, id, target_column):
         return self.edit_task(id, status=target_column)
 
     def _wait_for_record(self):
-        try:
-            self.wait.until(self._record_is_loaded)
-            return True
-        except Exception:
-            return False
+        self.wait.until(self._record_is_loaded)
+        return True
 
     def _record_is_loaded(self, driver):
         return self.get_value(loc.TITLE_INPUT) != ""
