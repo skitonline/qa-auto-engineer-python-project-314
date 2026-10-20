@@ -62,7 +62,8 @@ class TasksPage(ListStructureClass):
         try:
             backdrops = self.driver.find_elements(*loc.BACKDROP)
             if backdrops:
-                self.driver.execute_script("arguments[0].click();", backdrops[0])
+                self.driver.execute_script("arguments[0].click();", 
+                                           backdrops[0])
         except Exception:
             pass
 
@@ -123,10 +124,7 @@ class TasksPage(ListStructureClass):
             return None
 
         self.open_tasks()
-        self.wait.until(
-            lambda d: '/tasks/' not in d.current_url or d.current_url.endswith('/tasks')
-        )
-        self.wait_for_elements(loc.COLUMN)
+        self.wait_for_elements(loc.CARD)
         return True
 
     def delete_task(self, id):
