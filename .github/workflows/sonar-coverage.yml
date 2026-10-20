@@ -10,7 +10,8 @@ jobs:
   sonar:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -18,7 +19,9 @@ jobs:
           python-version: "3.14"
 
       - name: Install dependencies
-        run: uv sync --no-dev && uv sync --group dev
+        run: |
+          uv sync --no-dev
+          uv sync --group dev
 
       - name: Run tests with coverage
         run: coverage run -m pytest tests/
@@ -27,7 +30,7 @@ jobs:
         run: coverage xml
 
       - name: SonarCloud Scan
-        uses: sonarcloud/github-action@v1
+        uses: sonarcloud/github-action@v2
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: https://sonarcloud.io
