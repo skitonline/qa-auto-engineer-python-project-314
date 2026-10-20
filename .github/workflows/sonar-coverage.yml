@@ -1,37 +1,33 @@
-name: Sonar Analysis
+name: SonarCloud Analysis
 
 on:
   push:
     branches: [ main ]
   pull_request:
-    branches: [ main ]
+    types: [ opened, synchronize, reopened ]
 
 jobs:
-  sonar:
+  sonarcloud:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
         with:
-          python-version: "3.14"
+          fetch-depth: 0
 
-      - name: Install dependencies
-        run: |
-          uv sync --no-dev
-          uv sync --group dev
+      - name: Install uv
+        run: curl -LsSf https://astral.sh/uv/install.sh | sh
 
-      - name: Run tests with coverage
-        run: coverage run -m pytest tests/
+      - name: Add uv to PATH
+        run: echo "$HOME/.local/bin" >> $GITHUB_PATH
 
-      - name: Generate coverage XML
-        run: coverage xml
+      - name: Sync dependencies
+        run: uv sync --no-dev
 
-      - name: SonarCloud Scan
+      - name: Run SonarCloud analysis
         uses: SonarSource/sonarqube-scan-action@v3
+        with:
+          projectBaseDir: .
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: https://sonarcloud.io
-          SONAR_PYTHON_VERSION: "3.14"
+          SONAR_TOKEN: \${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: \${{ secrets.SONAR_HOST_URL }}
