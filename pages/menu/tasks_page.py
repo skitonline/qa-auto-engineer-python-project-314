@@ -97,8 +97,11 @@ class TasksPage(ListStructureClass):
         card = self._find_card_by_id(id)
         if not card:
             return False
-        locator = (By.CSS_SELECTOR, f'a[href="#/tasks/{task_id}"]')
-        return self.click(locator)
+        locator = (By.CSS_SELECTOR, f'a[href*="#/tasks/{task_id}"]')
+        if not self.click(locator):
+            return False
+        self._wait_for_record()
+        return True
 
     def get_task_info(self, id):
         if not self._open_task(id):
