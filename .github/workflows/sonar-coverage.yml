@@ -9,6 +9,11 @@ on:
 jobs:
   sonarcloud:
     runs-on: ubuntu-latest
+    services:
+      app:
+        image: hexletprojects/qa_auto_python_testing_kanban_board_project_ru_app
+        ports:
+          - 5173:5173
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -23,10 +28,6 @@ jobs:
 
       - name: Start application server
         run: |
-          docker run -d --name kanban-app -p 5173:5173 hexletprojects/qa_auto_python_testing_kanban_board_project_ru_app &
-          APP_PID=$!
-          trap 'docker stop kanban-app 2>/dev/null; docker rm kanban-app 2>/dev/null; kill $APP_PID 2>/dev/null || true' EXIT
-
           READY=0
           for i in $(seq 1 60); do
             if curl -sf http://localhost:5173 > /dev/null 2>&1; then
