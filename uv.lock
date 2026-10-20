@@ -139,6 +139,7 @@ name = "hexlet-code"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
+    { name = "coverage" },
     { name = "pytest" },
     { name = "python-dotenv" },
     { name = "selenium" },
@@ -152,6 +153,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "coverage", extras = ["cobertura"], specifier = ">=7.16.2" },
     { name = "pytest", specifier = ">=9.1.1" },
     { name = "python-dotenv", specifier = ">=1.2.4" },
     { name = "selenium", specifier = ">=4.51.0" },

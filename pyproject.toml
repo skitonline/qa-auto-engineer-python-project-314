@@ -5,6 +5,7 @@ description = "Testing kanban desk with Python selenium"
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
+    "coverage[cobertura]>=7.16.2",
     "pytest>=9.1.1",
     "python-dotenv>=1.2.4",
     "selenium>=4.51.0",
