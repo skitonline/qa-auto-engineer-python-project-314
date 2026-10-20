@@ -30,9 +30,8 @@ jobs:
         run: coverage xml
 
       - name: SonarCloud Scan
-        uses: sonarcloud/github-action@v2
+        uses: SonarSource/sonarqube-scan-action@v3
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: https://sonarcloud.io
           SONAR_PYTHON_VERSION: "3.14"
-          SONAR_COVERAGE_REPORT_PATHS: "coverage.xml"
