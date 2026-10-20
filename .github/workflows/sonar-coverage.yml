@@ -21,6 +21,27 @@ jobs:
       - name: Install dependencies
         run: uv sync
 
+      - name: Start application server
+        run: |
+          docker run -d --name kanban-app -p 5173:5173 hexletprojects/qa_auto_python_testing_kanban_board_project_ru_app &
+          APP_PID=$!
+          trap 'docker stop kanban-app 2>/dev/null; docker rm kanban-app 2>/dev/null; kill $APP_PID 2>/dev/null || true' EXIT
+
+          READY=0
+          for i in $(seq 1 60); do
+            if curl -sf http://localhost:5173 > /dev/null 2>&1; then
+              READY=1
+              echo "Application is ready"
+              break
+            fi
+            sleep 2
+          done
+
+          if [ "$READY" -ne 1 ]; then
+            echo "Application did not start in time" >&2
+            exit 1
+          fi
+
       - name: Run tests with coverage
         run: uv run coverage run -m pytest tests/
 
