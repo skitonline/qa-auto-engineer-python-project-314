@@ -7,7 +7,6 @@ ASSIGNEE = "john@google.com"
 OTHER_ASSIGNEE = "sarah@example.com"
 LABEL = "bug"
 OTHER_LABEL = "feature"
-COUNT_TASKS = 15
 
 
 def test_form_create(tasks_page):

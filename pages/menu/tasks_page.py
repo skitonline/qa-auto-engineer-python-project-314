@@ -15,7 +15,7 @@ class TasksPage(ListStructureClass):
         if not self.click(list_loc.CREATE_BUTTON):
             return None
 
-        if not self.fill_fields(assignee, title, status, content, label):
+        if not self._fill_fields(assignee, title, status, content, label):
             return None
 
         if self.wait_url_not_contains('create'):
@@ -26,7 +26,7 @@ class TasksPage(ListStructureClass):
         self.open_tasks()
         return result
 
-    def fill_fields(self, assignee, title, status, content, label):
+    def _fill_fields(self, assignee, title, status, content, label):
         if (assignee is not None
                 and not self._select_option(loc.ASSIGNEE_SELECT, assignee)):
             return False
@@ -123,7 +123,7 @@ class TasksPage(ListStructureClass):
         if not self._wait_for_record():
             return None
 
-        if not self.fill_fields(assignee, title, status, content, label):
+        if not self._fill_fields(assignee, title, status, content, label):
             return None
 
         self.open_tasks()

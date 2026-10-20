@@ -6,8 +6,6 @@ DELETE_BUTTON = (By.CSS_SELECTOR, '[aria-label="Delete"]')
 SELECT_ALL = (By.CSS_SELECTOR, '[aria-label="Select all"]')
 
 ROWS = (By.CSS_SELECTOR, "tbody.datagrid-body tr.RaDatagrid-row")
-CELLS = (By.CSS_SELECTOR, "td.RaDatagrid-rowCell")
-SPAN = (By.CSS_SELECTOR, "span.MuiTypography-root")
 ID_COLUMN = (By.CSS_SELECTOR, "td.column-id")
 COLUMN = (By.CSS_SELECTOR, "td")
 CHECKBOX = (By.CSS_SELECTOR, "input[type='checkbox']")
