@@ -13,29 +13,22 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 
+          fetch-depth: 0
 
       - name: Install uv
-        run: curl -LsSf https://astral.sh/uv/install.sh | sh
+        uses: astral-sh/setup-uv@v6
 
-      - name: Add uv to PATH
-        run: echo "$HOME/.local/bin" >> $GITHUB_PATH
-
-      - name: Sync dependencies
-        run: |
-          uv sync --no-dev
-          uv sync --group dev
+      - name: Install dependencies
+        run: uv sync
 
       - name: Run tests with coverage
-        run: coverage run -m pytest tests/
+        run: uv run coverage run -m pytest tests/
 
       - name: Generate coverage XML
-        run: coverage xml
+        run: uv run coverage xml
 
       - name: SonarCloud Scan
-        uses: SonarSource/sonarqube-scan-action@v3
-        with:
-          projectBaseDir: .
+        uses: SonarSource/sonarcloud-github-action@v2
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
