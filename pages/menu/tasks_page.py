@@ -15,7 +15,7 @@ class TasksPage(ListStructureClass):
         if not self.click(list_loc.CREATE_BUTTON):
             return None
 
-        if self._fill_fields(assignee, title, status, content, label) is None:
+        if not self._fill_fields(assignee, title, status, content, label):
             return None
 
         if self.wait_url_not_contains('create'):
@@ -27,43 +27,22 @@ class TasksPage(ListStructureClass):
         return result
 
     def _fill_fields(self, assignee, title, status, content, label):
-        changed_fields = {}
         if (assignee is not None
                 and not self._select_option(loc.ASSIGNEE_SELECT, assignee)):
-            return None
-        if assignee is not None:
-            changed_fields[loc.ASSIGNEE_SELECT] = {
-                "value": assignee, "getter": "get_text"
-            }
+            return False
         if title is not None and not self.type(loc.TITLE_INPUT, title):
-            return None
-        if title is not None:
-            changed_fields[loc.TITLE_INPUT] = {
-                "value": title, "getter": "get_value"
-            }
+            return False
         if content is not None and not self.type(loc.CONTENT_INPUT, content):
-            return None
-        if content is not None:
-            changed_fields[loc.CONTENT_INPUT] = {
-                "value": content, "getter": "get_value"
-            }
+            return False
         if (status is not None
                 and not self._select_option(loc.STATUS_SELECT, status)):
-            return None
-        if status is not None:
-            changed_fields[loc.STATUS_SELECT] = {
-                "value": status, "getter": "get_text"
-            }
+            return False
         if (label is not None
             and not self._select_option(loc.LABEL_SELECT, label)):
-            return None
-        if label is not None:
-            changed_fields[loc.LABEL_SELECT] = {
-                "value": label, "getter": "get_text"
-            }
+            return False
         if not self.click(list_loc.SAVE_BUTTON):
-            return None
-        return changed_fields
+            return False
+        return True
 
     def _select_option(self, locator, option):
         if not self.click(locator):
@@ -144,14 +123,8 @@ class TasksPage(ListStructureClass):
         if not self._wait_for_record():
             return None
 
-        changed_fields = self._fill_fields(
-            assignee, title, status, content, label
-        )
-        if changed_fields is None:
+        if not self._fill_fields(assignee, title, status, content, label):
             return None
-
-        if changed_fields:
-            self._wait_for_fields_saved(changed_fields)
 
         self.open_tasks()
         self.wait_for_elements(loc.CARD)
@@ -217,14 +190,6 @@ class TasksPage(ListStructureClass):
 
     def _record_is_loaded(self, driver):
         return self.get_value(loc.TITLE_INPUT) != ""
-
-    def _wait_for_fields_saved(self, changed_fields):
-        for locator, info in changed_fields.items():
-            getter = getattr(self, info["getter"])
-            self.wait.until(
-                lambda d, loc=locator, val=info["value"], g=getter:
-                    g(loc) == val
-            )
 
     def _find_card_by_id(self, id):
         for _ in range(3):
