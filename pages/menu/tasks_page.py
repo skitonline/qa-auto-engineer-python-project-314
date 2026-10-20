@@ -192,12 +192,8 @@ class TasksPage(ListStructureClass):
         return self.get_value(loc.TITLE_INPUT) != ""
 
     def _find_card_by_id(self, id):
-        for _ in range(3):
-            cards = self.wait_for_elements(loc.CARD)
-            for card in cards:
-                try:
-                    if card.get_attribute("data-rfd-draggable-id") == str(id):
-                        return card
-                except Exception:
-                    continue
+        cards = self.wait_for_elements(loc.CARD)
+        for card in cards:
+            if card.get_attribute("data-rfd-draggable-id") == str(id):
+                return card
         return None

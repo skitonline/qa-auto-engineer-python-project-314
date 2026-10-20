@@ -9,6 +9,11 @@ on:
 jobs:
   sonarcloud:
     runs-on: ubuntu-latest
+    services:
+      app:
+        image: hexletprojects/qa_auto_python_testing_kanban_board_project_ru_app
+        ports:
+          - 5173:5173
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -21,6 +26,23 @@ jobs:
       - name: Install dependencies
         run: uv sync
 
+      - name: Start application server
+        run: |
+          READY=0
+          for i in $(seq 1 60); do
+            if curl -sf http://localhost:5173 > /dev/null 2>&1; then
+              READY=1
+              echo "Application is ready"
+              break
+            fi
+            sleep 2
+          done
+
+          if [ "$READY" -ne 1 ]; then
+            echo "Application did not start in time" >&2
+            exit 1
+          fi
+
       - name: Run tests with coverage
         run: uv run coverage run -m pytest tests/
 
@@ -28,7 +50,7 @@ jobs:
         run: uv run coverage xml
 
       - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@v2
+        uses: SonarSource/sonarqube-scan-action@v5
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
