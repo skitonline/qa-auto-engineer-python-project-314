@@ -1,0 +1,35 @@
+name: Sonar Analysis
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  sonar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+
+      - name: Install dependencies
+        run: uv sync --no-dev && uv sync --group dev
+
+      - name: Run tests with coverage
+        run: coverage run -m pytest tests/
+
+      - name: Generate coverage XML
+        run: coverage xml
+
+      - name: SonarCloud Scan
+        uses: sonarcloud/github-action@v1
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: https://sonarcloud.io
+          SONAR_PYTHON_VERSION: "3.14"
+          SONAR_COVERAGE_REPORT_PATHS: "coverage.xml"

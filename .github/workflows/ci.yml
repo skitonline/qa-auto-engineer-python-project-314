@@ -24,12 +24,10 @@ jobs:
 
       - name: Start application and run tests
         run: |
-          # Поднимаем контейнер приложения в фоне (make start запускает docker run)
           make start &
           APP_PID=$!
           trap 'kill $APP_PID 2>/dev/null || true' EXIT
 
-          # Ждём, пока приложение станет доступно на http://localhost:5173
           READY=0
           for i in $(seq 1 60); do
             if curl -sf http://localhost:5173 > /dev/null 2>&1; then
@@ -45,5 +43,4 @@ jobs:
             exit 1
           fi
 
-          # Запускаем все тесты приложения
           make test
