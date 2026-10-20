@@ -1,3 +1,4 @@
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
@@ -19,22 +20,8 @@ class BasePage:
         try:
             el = self.wait.until(EC.visibility_of_element_located(locator))
             el.click()
-            self.driver.execute_script(
-                """
-                var element = arguments[0];
-                element.focus();
-                element.setSelectionRange(0, element.value.length);
-                element.value = '';
-                """, el
-            )
+            el.send_keys(Keys.CONTROL, "a")
             el.send_keys(value)
-            self.driver.execute_script(
-                """
-                var element = arguments[0];
-                element.dispatchEvent(new Event('input', { bubbles: true }));
-                element.dispatchEvent(new Event('change', { bubbles: true }));
-                """, el
-            )
             return True
         except Exception:
             return False
@@ -82,8 +69,11 @@ class BasePage:
             return []
 
     def wait_url_not_contains(self, substring):
+        def url_does_not_contain(driver, value=substring):
+            return value not in driver.current_url
+
         try:
-            self.wait.until(lambda d: substring not in d.current_url)
+            self.wait.until(url_does_not_contain)
             return True
         except Exception:
             return False

@@ -86,7 +86,7 @@ class TasksPage(ListStructureClass):
         return result
 
     def get_task_by_id(self, id):
-        cards = self.wait_for_elements(loc.CARD)
+        cards = self.driver.find_elements(*loc.CARD)
         for card in cards:
             if card.get_attribute("data-rfd-draggable-id") == str(id):
                 return card
@@ -126,6 +126,9 @@ class TasksPage(ListStructureClass):
         if not self._fill_fields(assignee, title, status, content, label):
             return None
 
+        if not self.wait_url_not_contains(str(id)):
+            return None
+
         self.open_tasks()
         self.wait_for_elements(loc.CARD)
         return True
@@ -140,9 +143,10 @@ class TasksPage(ListStructureClass):
         if not self.click(list_loc.DELETE_BUTTON):
             return False
 
-        self.wait.until(
-            lambda d: self.get_task_by_id(id) is None
-        )
+        def card_is_deleted(driver, value=id):
+            return self.get_task_by_id(value) is None
+
+        self.wait.until(card_is_deleted)
         return True
 
     def filter_by_status(self, status):
@@ -189,7 +193,10 @@ class TasksPage(ListStructureClass):
         return True
 
     def _record_is_loaded(self, driver):
-        return self.get_value(loc.TITLE_INPUT) != ""
+        elements = driver.find_elements(*loc.TITLE_INPUT)
+        if not elements:
+            return False
+        return bool(elements[0].get_attribute("value"))
 
     def _find_card_by_id(self, id):
         cards = self.wait_for_elements(loc.CARD)
