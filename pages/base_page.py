@@ -20,8 +20,22 @@ class BasePage:
         try:
             el = self.wait.until(EC.visibility_of_element_located(locator))
             el.click()
-            el.send_keys(Keys.CONTROL + "a")
+            self.driver.execute_script(
+                """
+                var element = arguments[0];
+                element.focus();
+                element.setSelectionRange(0, element.value.length);
+                element.value = '';
+                """, el
+            )
             el.send_keys(value)
+            self.driver.execute_script(
+                """
+                var element = arguments[0];
+                element.dispatchEvent(new Event('input', { bubbles: true }));
+                element.dispatchEvent(new Event('change', { bubbles: true }));
+                """, el
+            )
             return True
         except Exception:
             return False
