@@ -1,4 +1,3 @@
-from sys import prefix
 
 import pages.locators.list_structure_locators as list_loc
 import pages.locators.tasks_locators as tasks_loc
