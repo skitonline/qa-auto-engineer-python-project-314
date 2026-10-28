@@ -39,4 +39,11 @@ class StatusesPage(ListStructureClass):
                     loc.LOCATORS,
                     [name, slug]
         )
-        return self._fill_data(data)
+        result = self._fill_data(data)
+        if not result:
+            return result
+
+        if not self._wait_until_row_updated(
+                id, loc.FIELDS, {'name': name, 'slug': slug}):
+            return False
+        return result

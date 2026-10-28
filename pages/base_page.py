@@ -1,3 +1,4 @@
+from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
@@ -13,6 +14,13 @@ class BasePage:
 
     def open(self, url):
         self.driver.get(url)
+
+    def _resource_list_url(self):
+        base, _, fragment = self.url().partition("#")
+        sections = [s for s in fragment.split("?")[0].split("/") if s]
+        if sections and sections[-1].isdigit():
+            sections = sections[:-1]
+        return f"{base}#{'/'.join(sections)}"
 
     def type(self, locator, value):
         if value == '':
@@ -77,3 +85,14 @@ class BasePage:
             return True
         except Exception:
             return False
+
+    def _wait_undo_window_closed(self):
+        undo_locator = (By.XPATH, "//*[normalize-space(text()) = 'Undo']")
+        try:
+            self.wait.until(EC.visibility_of_element_located(undo_locator))
+        except Exception:
+            return
+        try:
+            self.wait.until(EC.invisibility_of_element_located(undo_locator))
+        except Exception:
+            pass

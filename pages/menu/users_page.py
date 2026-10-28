@@ -42,6 +42,13 @@ class UsersPage(ListStructureClass):
                     [email, first_name, last_name]
         )
         result = self._fill_data(data)
+        if not result:
+            return result
 
         self.open_users()
+        if not self._wait_until_row_updated(
+                id, locs.FIELDS,
+                {'email': email, 'first_name': first_name,
+                 'last_name': last_name}):
+            return False
         return result

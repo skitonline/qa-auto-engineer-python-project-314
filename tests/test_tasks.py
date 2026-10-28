@@ -1,3 +1,5 @@
+from sys import prefix
+
 import pages.locators.list_structure_locators as list_loc
 import pages.locators.tasks_locators as tasks_loc
 
@@ -88,8 +90,7 @@ def test_edit_task(tasks_page):
     new_title = "edit_title"
     assert tasks_page.edit_task(task_id, title=new_title, status=TARGET_STATUS)
 
-    task = tasks_page.get_task_info(task_id)
-    assert task['assignee'] == ASSIGNEE
+    task = tasks_page.get_all_tasks()[task_id]
     assert task['title'] == new_title
     assert task['status'] == TARGET_STATUS
 

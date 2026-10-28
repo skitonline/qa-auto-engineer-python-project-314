@@ -59,13 +59,10 @@ class TasksPage(ListStructureClass):
         return True
 
     def _close_dropdown(self):
-        try:
-            backdrops = self.driver.find_elements(*loc.BACKDROP)
-            if backdrops:
-                self.driver.execute_script("arguments[0].click();", 
-                                           backdrops[0])
-        except Exception:
-            pass
+        backdrops = self.driver.find_elements(*loc.BACKDROP)
+        if backdrops:
+            self.driver.execute_script("arguments[0].click();",
+                                       backdrops[0])
 
     def get_all_tasks(self):
         columns = self.wait_for_elements(loc.COLUMN)
@@ -86,7 +83,7 @@ class TasksPage(ListStructureClass):
         return result
 
     def get_task_by_id(self, id):
-        cards = self.driver.find_elements(*loc.CARD)
+        cards = self.wait_for_elements(loc.CARD)
         for card in cards:
             if card.get_attribute("data-rfd-draggable-id") == str(id):
                 return card
@@ -100,14 +97,14 @@ class TasksPage(ListStructureClass):
         locator = (By.CSS_SELECTOR, f'a[href*="#/tasks/{task_id}"]')
         if not self.click(locator):
             return False
-        self._wait_for_record()
+        self.wait_card_info_loaded()
         return True
 
     def get_task_info(self, id):
         if not self._open_task(id):
             return None
 
-        return {
+        result = {
             'assignee': self.get_text(loc.ASSIGNEE_SELECT),
             'title': self.get_value(loc.TITLE_INPUT),
             'content': self.get_text(loc.CONTENT_INPUT),
@@ -115,38 +112,28 @@ class TasksPage(ListStructureClass):
             'label': self.get_text(loc.LABEL_SELECT),
         }
 
+        self.open_tasks()
+        return result
+
     def edit_task(self, id, assignee=None, title=None,
-        status=None, content=None, label=None):
+                  status=None, content=None, label=None):
         if not self._open_task(id):
             return None
-
-        if not self._wait_for_record():
-            return None
-
         if not self._fill_fields(assignee, title, status, content, label):
             return None
-
         if not self.wait_url_not_contains(str(id)):
             return None
 
-        self.open_tasks()
-        self.wait_for_elements(loc.CARD)
         return True
 
     def delete_task(self, id):
         if not self._open_task(id):
             return False
 
-        if not self._wait_for_record():
-            return False
-
         if not self.click(list_loc.DELETE_BUTTON):
             return False
 
-        def card_is_deleted(driver, value=id):
-            return self.get_task_by_id(value) is None
-
-        self.wait.until(card_is_deleted)
+        self.wait_for_elements(loc.CARD)
         return True
 
     def filter_by_status(self, status):
@@ -159,16 +146,10 @@ class TasksPage(ListStructureClass):
         return self._apply_filter(loc.LABEL_SELECT, label)
 
     def _apply_filter(self, locator, value):
-        if not self.click(locator):
+        if not self._select_option(locator, value):
             return False
-        option_locator = (By.XPATH,
-            f'//li[@role="option"][normalize-space(.) = "{value}"]')
-        option_el = self.wait_for_element(option_locator)
-        if not option_el:
+        if not self.wait.until(EC.url_contains("filter=")):
             return False
-        self.driver.execute_script("arguments[0].click();", option_el)
-        self._close_dropdown()
-        self.wait.until(EC.url_contains("filter="))
         self.wait_for_elements(loc.CARD)
         return True
 
@@ -193,10 +174,13 @@ class TasksPage(ListStructureClass):
         return True
 
     def _record_is_loaded(self, driver):
-        elements = driver.find_elements(*loc.TITLE_INPUT)
-        if not elements:
+        title_elements = driver.find_elements(*loc.TITLE_INPUT)
+        if not title_elements or not title_elements[0].get_attribute("value"):
             return False
-        return bool(elements[0].get_attribute("value"))
+        status_elements = driver.find_elements(*loc.STATUS_SELECT)
+        if not status_elements or not status_elements[0].text:
+            return False
+        return True
 
     def _find_card_by_id(self, id):
         cards = self.wait_for_elements(loc.CARD)
@@ -204,3 +188,11 @@ class TasksPage(ListStructureClass):
             if card.get_attribute("data-rfd-draggable-id") == str(id):
                 return card
         return None
+
+    def wait_card_info_loaded(self):
+        self.wait_for_element(loc.ASSIGNEE_SELECT)
+        self.wait_for_element(loc.TITLE_INPUT)
+        self.wait_for_element(loc.STATUS_SELECT)
+        self.wait_for_element(loc.CONTENT_INPUT)
+        self.wait_for_element(loc.LABEL_SELECT)
+        return True

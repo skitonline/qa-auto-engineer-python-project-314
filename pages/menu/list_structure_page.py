@@ -80,7 +80,6 @@ class ListStructureClass(InterfacePage):
 
     def delete_some_rows(self, *ids):
         rows = self.wait_for_elements(loc.ROWS)
-        before_delete = len(rows)
         ids_str = {str(i) for i in ids}
 
         for row in rows:
@@ -90,8 +89,7 @@ class ListStructureClass(InterfacePage):
                 self._select_checkbox(checkbox)
 
         self.click(loc.DELETE_BUTTON)
-        after_delete = len(self.wait_for_elements(loc.ROWS))
-        return before_delete - after_delete == len(ids)
+        return self._wait_until_rows_absent(ids)
 
     def _select_checkbox(self, checkbox):
         if not checkbox.is_selected():
@@ -101,9 +99,69 @@ class ListStructureClass(InterfacePage):
         el = self.wait.until(EC.presence_of_element_located(loc.SELECT_ALL))
         el.click()
         self.click(loc.DELETE_BUTTON)
-        self.wait.until(self._is_table_empty)
+        return self._wait_until_rows_absent()
 
-    @staticmethod
-    def _is_table_empty(driver):
-        rows = driver.find_elements(*loc.ROWS)
-        return len(rows) == 0
+    def _wait_until_row_updated(self, id, fields, expected):
+        self._wait_undo_window_closed()
+        self.open(self._resource_list_url())
+        self.wait_for_elements(loc.ROWS)
+
+        def row_is_updated(driver, value=id):
+            row = self._find_row(value)
+            if row is None:
+                return False
+            return self._row_has_values(row, fields, expected)
+
+        try:
+            self.wait.until(row_is_updated)
+            return True
+        except Exception:
+            return False
+
+    def _wait_until_rows_absent(self, ids=None):
+        self._wait_undo_window_closed()
+        self.open(self._resource_list_url())
+        self.wait_for_elements(loc.ROWS)
+        ids_set = None if ids is None else {str(i) for i in ids}
+
+        def rows_are_absent(driver, value=ids_set):
+            return self._all_rows_absent(value)
+
+        try:
+            self.wait.until(rows_are_absent)
+            return True
+        except Exception:
+            return False
+
+    def _find_row(self, id):
+        rows = self.driver.find_elements(*loc.ROWS)
+        for row in rows:
+            try:
+                id_cell = row.find_element(*loc.ID_COLUMN)
+                if id_cell.text == str(id):
+                    return row
+            except Exception:
+                continue
+        return None
+
+    def _row_has_values(self, row, fields, expected):
+        cells = row.find_elements(*loc.COLUMN)
+        if len(cells) < len(fields) + 2:
+            return False
+        row_fields = cells[2:]
+        for i, field in enumerate(fields):
+            if field in expected and row_fields[i].text != expected[field]:
+                return False
+        return True
+
+    def _all_rows_absent(self, ids_set):
+        rows = self.driver.find_elements(*loc.ROWS)
+        if ids_set is None:
+            return len(rows) == 0
+        found = set()
+        for row in rows:
+            try:
+                found.add(row.find_element(*loc.ID_COLUMN).text)
+            except Exception:
+                continue
+        return not (ids_set & found)

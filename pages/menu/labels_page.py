@@ -31,4 +31,11 @@ class LabelsPage(ListStructureClass):
             name = self.get_value(loc.NAME_INPUT)
 
         data = self._create_insert_data(loc.LOCATORS, [name, ])
-        return self._fill_data(data)
+        result = self._fill_data(data)
+        if not result:
+            return result
+
+        if not self._wait_until_row_updated(
+                id, loc.FIELDS, {'name': name}):
+            return False
+        return result
