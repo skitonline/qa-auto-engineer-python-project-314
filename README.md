@@ -1,6 +1,6 @@
 # Тестирование канбан-доски
 
-[![hexlet-check](https://github.com/skitonline/qa-auto-engineer-python-project-314/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/skitonline/qa-auto-engineer-python-project-314/actions)[![CI](https://github.com/skitonline/qa-auto-engineer-python-project-314/actions/workflows/ci.yml/badge.svg)](https://github.com/skitonline/qa-auto-engineer-python-project-314/actions/workflows/ci.yml)
+[![hexlet-check](https://github.com/skitonline/qa-auto-engineer-python-project-314/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/skitonline/qa-auto-engineer-python-project-314/actions)[![CI](https://github.com/skitonline/qa-auto-engineer-python-project-314/actions/workflows/ci.yml/badge.svg)](https://github.com/skitonline/qa-auto-engineer-python-project-314/actions/workflows/ci.yml)[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=skitonline_qa-auto-engineer-python-project-314&metric=coverage)](https://sonarcloud.io/summary/new_code?id=skitonline_qa-auto-engineer-python-project-314)
 
 UI-автотесты для приложения Task Manager (канбан-доска): Python, Selenium, pytest.
 Взаимодействие со страницами оформлено по паттерну Page Object.
